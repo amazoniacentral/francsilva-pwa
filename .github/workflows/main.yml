@@ -54,7 +54,7 @@ jobs:
         yes | bubblewrap build --release --sdk 17 --version 4
 
     - name: Upload APK as artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
       with:
         name: app-release.apk
         path: ./app-release.apk
