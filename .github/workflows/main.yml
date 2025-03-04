@@ -31,8 +31,8 @@ jobs:
 
       - name: Initialize Bubblewrap
         run: |
-          echo "No" | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
-            --no-interactive --skip-sdk --jdk $JAVA_HOME
+          bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
+            --no-interactive --skip-sdk --jdk $JAVA_HOME --answer "No"
 
       - name: Debug Disk and Processes
         run: |
@@ -48,7 +48,6 @@ jobs:
 
       - name: Start Android Emulator
         run: |
-          # Instalar as dependências necessárias
           sdkmanager "system-images;android-30;google_apis;x86_64"
           echo no | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "pixel"
           
