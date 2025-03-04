@@ -17,7 +17,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '17'
-        distribution: 'temurin'  # Especificando a distribuição Temurin
+        distribution: 'temurin'  # Adicionando a distribuição Temurin
 
     - name: Set up Android SDK
       uses: reactivecircus/android-emulator-runner@v2
