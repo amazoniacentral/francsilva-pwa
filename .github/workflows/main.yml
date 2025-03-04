@@ -37,10 +37,10 @@ jobs:
         echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
         echo "$HOME/android-sdk/build-tools/30.0.3" >> $GITHUB_PATH
 
-    # Instalação do Bubblewrap
+    # Instalação do Bubblewrap via NPM
     - name: Install Bubblewrap
       run: |
-        curl -sSL https://github.com/GoogleChromeLabs/bubblewrap/releases/download/v1.0.0/bubblewrap-1.0.0-linux-x64.tar.gz | tar -xz -C /usr/local/bin
+        npm install -g @bubblewrap/cli
 
     # Inicialização do Bubblewrap (Pulando instalação do SDK)
     - name: Initialize Bubblewrap (No SDK Install)
