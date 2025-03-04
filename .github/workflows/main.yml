@@ -32,6 +32,8 @@ jobs:
         unzip commandlinetools-linux.zip -d $HOME/android-sdk
         yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --update
         yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-30" "emulator" "system-images;android-30;google_apis;x86_64"
+        
+        # Garantir que o adb esteja disponível
         export ANDROID_HOME=$HOME/android-sdk
         export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
 
