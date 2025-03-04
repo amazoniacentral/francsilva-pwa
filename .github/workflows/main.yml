@@ -31,8 +31,9 @@ jobs:
 
       - name: Initialize Bubblewrap
         run: |
+          export DEBIAN_FRONTEND=noninteractive
           bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
-            --no-interactive --skip-sdk --jdk $JAVA_HOME --answer "No"
+            --no-interactive --skip-sdk --jdk $JAVA_HOME --answer "Yes" --auto-accept-licenses --install-jdk
 
       - name: Debug Disk and Processes
         run: |
@@ -44,7 +45,7 @@ jobs:
           timeout 1800 bubblewrap build --no-interactive \
             --keystore-path gvendas.keystore \
             --key-password ${{ secrets.KEY_PASSWORD }} \
-            --key-alias gvendas
+            --key-alias gvendas --answer "Yes" --auto-accept-licenses
 
       - name: Start Android Emulator
         run: |
