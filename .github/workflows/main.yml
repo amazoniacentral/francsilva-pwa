@@ -48,24 +48,19 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/android-sdk/platform-tools:$HOME/android-sdk/build-tools/29.0.2:$PATH" >> $GITHUB_ENV
 
-      # Passo 7: Verificar resposta do manifesto JSON
-      - name: Debugging Manifest
-        run: |
-          curl -s https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
-
-      # Passo 8: Inicializar o Bubblewrap usando o JDK e SDK instalados
+      # Passo 7: Inicializar o Bubblewrap usando o JDK e SDK instalados
       - name: Initialize Bubblewrap
         run: |
-          export JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.2-2/x64
+          export JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
           export PATH=$JAVA_HOME/bin:$PATH
-          echo "No" | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive --skip-sdk --jdk $JAVA_HOME
+          bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive --jdk $JAVA_HOME
 
-      # Passo 9: Gerar o APK com chave de assinatura automaticamente
+      # Passo 8: Gerar o APK com chave de assinatura automaticamente
       - name: Generate APK
         run: |
           bubblewrap build --keystore-path gvendas.keystore --key-password ${{ secrets.KEY_PASSWORD }} --key-alias gvendas
 
-      # Passo 10: Fazer o upload do APK gerado como Artefato
+      # Passo 9: Fazer o upload do APK gerado como Artefato
       - name: Upload APK as Artifact
         uses: actions/upload-artifact@v4
         with:
