@@ -36,6 +36,11 @@ jobs:
           export JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
           export PATH=$JAVA_HOME/bin:$PATH
 
+      # Install Bubblewrap
+      - name: Install Bubblewrap
+        run: |
+          npm install -g @bubblewrap/cli
+
       # Initialize Bubblewrap, skipping SDK installation
       - name: Initialize Bubblewrap (No SDK Install)
         run: |
