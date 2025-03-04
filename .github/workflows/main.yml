@@ -43,7 +43,7 @@ jobs:
         bubblewrap build --keystore-path gvendas.keystore --key-password ${{ secrets.KEY_PASSWORD }} --key-alias gvendas --output-dir ./output
 
     - name: Upload APK as an artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: app-release
         path: ./output/*.apk
