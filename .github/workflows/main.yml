@@ -18,10 +18,9 @@ jobs:
       with:
         node-version: '17'  # Usando Node.js 17
 
-    - name: Install dependencies
+    - name: Install Bubblewrap CLI globally
       run: |
-        npm install -g @bubblewrap/cli
-        npm install
+        npm install -g @bubblewrap/cli  # Instalando o Bubblewrap CLI globalmente
 
     - name: Set up Android SDK
       run: |
