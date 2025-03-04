@@ -31,7 +31,7 @@ jobs:
 
       - name: Initialize Bubblewrap
         run: |
-          echo "No" | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
+          echo No | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
             --no-interactive --skip-sdk --jdk $JAVA_HOME
 
       - name: Debug Disk and Processes
@@ -47,18 +47,17 @@ jobs:
             --key-alias gvendas
 
       - name: Start Android Emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          arch: x86_64
-          target: google_apis
-          force-avd-creation: false
-          avd-name: test
-          emulator-boot-timeout: 300
-          disable-linux-hw-accel: true
-          disable-animations: true
-          disable-spellchecker: true
-          enable-hw-keyboard: false
+        run: |
+          # Instalar as dependências necessárias
+          sdkmanager "system-images;android-30;google_apis;x86_64"
+          echo no | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "pixel"
+          
+          # Iniciar o emulador em segundo plano
+          nohup emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim &
+          adb wait-for-device
+          adb shell settings put global window_animation_scale 0
+          adb shell settings put global transition_animation_scale 0
+          adb shell settings put global animator_duration_scale 0
 
       - name: Run Tests
         run: ./gradlew connectedAndroidTest
