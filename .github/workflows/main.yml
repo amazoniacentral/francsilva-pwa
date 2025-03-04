@@ -31,7 +31,7 @@ jobs:
 
       - name: Initialize Bubblewrap
         run: |
-          # Usando 'yes' para responder automaticamente todas as perguntas com "No" e "Yes"
+          # Usando 'yes No' para responder automaticamente a todas as perguntas com "No"
           yes No | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
             --no-interactive --skip-sdk --jdk $JAVA_HOME
 
