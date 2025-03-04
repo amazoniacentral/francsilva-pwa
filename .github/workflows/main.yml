@@ -13,13 +13,23 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    # Configuração do Java JDK 17
     - name: Set up JDK
       uses: actions/setup-java@v2
       with:
         java-version: '17'
         distribution: 'temurin'
 
+    # Configuração do SDK do Android
     - name: Set up Android SDK
+      uses: actions/setup-android@v2
+      with:
+        sdk-version: '30'
+        target: 'google_apis'
+        components: 'platform-tools, build-tools-30.0.3, emulator, system-images;android-30;google_apis;x86_64'
+
+    # Configuração do Emulador Android
+    - name: Run Android Emulator
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: 30
@@ -36,23 +46,30 @@ jobs:
         disable-linux-hw-accel: true
         enable-hw-keyboard: false
         channel: stable
+      env:
+        JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
 
+    # Instalação do Bubblewrap
     - name: Install Bubblewrap
       run: |
         curl -sSL https://github.com/GoogleChromeLabs/bubblewrap/releases/download/v1.0.0/bubblewrap-1.0.0-linux-x64.tar.gz | tar -xz -C /usr/local/bin
 
+    # Inicialização do Bubblewrap (Pulando instalação do SDK)
     - name: Initialize Bubblewrap (No SDK Install)
       run: |
         echo "No" | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive --skip-sdk --jdk $JAVA_HOME
 
+    # Construção do App com Bubblewrap
     - name: Build Bubblewrap App
       run: |
         bubblewrap build --keystore-path gvendas.keystore --key-password ${{ secrets.KEY_PASSWORD }} --key-alias gvendas
 
+    # Geração do APK
     - name: Generate APK
       run: |
         bubblewrap build --keystore-path gvendas.keystore --key-password ${{ secrets.KEY_PASSWORD }} --key-alias gvendas --output-dir ./output
 
+    # Upload do APK como artefato
     - name: Upload APK as an artifact
       uses: actions/upload-artifact@v4
       with:
