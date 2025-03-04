@@ -31,7 +31,8 @@ jobs:
 
       - name: Initialize Bubblewrap
         run: |
-          echo No | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
+          # Usando 'yes' para responder automaticamente todas as perguntas com "No" e "Yes"
+          yes No | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
             --no-interactive --skip-sdk --jdk $JAVA_HOME
 
       - name: Debug Disk and Processes
