@@ -53,7 +53,7 @@ jobs:
         run: |
           export JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
           export PATH=$JAVA_HOME/bin:$PATH
-          bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive --jdk $JAVA_HOME
+          yes No | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive --jdk $JAVA_HOME
 
       # Passo 8: Gerar o APK com chave de assinatura automaticamente
       - name: Generate APK
