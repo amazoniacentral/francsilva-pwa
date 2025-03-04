@@ -27,18 +27,26 @@ jobs:
         sudo apt update -y
         sudo apt install -y openjdk-11-jdk
         sudo apt install -y unzip curl
+        
+        # Instalando o Android SDK
         mkdir -p $HOME/android-sdk
         curl -s https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -o commandlinetools-linux.zip
         unzip commandlinetools-linux.zip -d $HOME/android-sdk
         yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --update
+        
+        # Instalando as dependências necessárias
         yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-30" "emulator" "system-images;android-30;google_apis;x86_64"
         
-        # Garantir que o adb esteja disponível
+        # Garantindo que o adb e outras ferramentas estão no PATH
         export ANDROID_HOME=$HOME/android-sdk
         export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+        
+        # Verificando se o adb foi instalado corretamente
+        adb --version
 
     - name: Create and start Android Emulator
       run: |
+        # Criando e iniciando o emulador Android
         echo "no" | $ANDROID_HOME/emulator/emulator -avd test -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect &
 
     - name: Wait for the Emulator to Start
