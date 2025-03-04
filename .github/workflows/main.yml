@@ -31,8 +31,8 @@ jobs:
 
       - name: Initialize Bubblewrap
         run: |
-          bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
-            --no-interactive --skip-sdk --jdk $JAVA_HOME --no-install-jdk
+          echo "No" | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
+            --no-interactive --skip-sdk --jdk $JAVA_HOME
 
       - name: Debug Disk and Processes
         run: |
