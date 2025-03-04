@@ -10,42 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Checkout do repositório
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Configuração do Java JDK 17
+    # Instalação do Java JDK 17
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    # Instalação manual do Android SDK e Build Tools
-    - name: Install Android SDK and Build Tools
-      run: |
-        sudo apt-get install -y wget unzip
-        wget https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip -O tools.zip
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        unzip tools.zip -d $HOME/android-sdk/cmdline-tools
-        mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-        yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
-        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "build-tools;30.0.3"
-
-    - name: Add SDK to PATH
-      run: |
-        echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
-        echo "$HOME/android-sdk/build-tools/30.0.3" >> $GITHUB_PATH
+    # Instalação automática do Android SDK
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
 
     # Instalação do Bubblewrap via NPM
     - name: Install Bubblewrap
       run: |
         npm install -g @bubblewrap/cli
 
-    # Inicialização do Bubblewrap (Pulando instalação do SDK)
-    - name: Initialize Bubblewrap (No SDK Install)
+    # Inicialização do Bubblewrap com instalação automática do SDK
+    - name: Initialize Bubblewrap
       run: |
-        yes No | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive --skip-sdk --jdk $JAVA_HOME
+        export JAVA_HOME=$(echo $JAVA_HOME)
+        echo "Usando JAVA_HOME: $JAVA_HOME"
+        yes | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive --jdk $JAVA_HOME --verbose
 
     # Construção do App com Bubblewrap
     - name: Build Bubblewrap App
