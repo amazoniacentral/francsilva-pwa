@@ -45,7 +45,7 @@ jobs:
     # Inicialização do Bubblewrap (Pulando instalação do SDK)
     - name: Initialize Bubblewrap (No SDK Install)
       run: |
-        printf "No\n$JAVA_HOME\n" | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive --skip-sdk --jdk $JAVA_HOME
+        yes No | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive --skip-sdk --jdk $JAVA_HOME
 
     # Construção do App com Bubblewrap
     - name: Build Bubblewrap App
