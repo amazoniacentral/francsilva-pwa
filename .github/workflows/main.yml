@@ -1,4 +1,4 @@
-name: Build Android App
+name: Build Bubblewrap App
 
 on:
   push:
@@ -8,52 +8,42 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      # Cache Node.js
-      - name: Cache Node modules
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
 
-      # Cache Android SDK
-      - name: Cache Android SDK
-        uses: actions/cache@v3
-        with:
-          path: $HOME/android-sdk
-          key: ${{ runner.os }}-android-sdk-${{ hashFiles('**/build.gradle') }} # Se estiver usando Gradle
-          restore-keys: |
-            ${{ runner.os }}-android-sdk-
+    - name: Set up Android SDK
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 30
+        arch: x86_64
+        target: google_apis
+        force-avd-creation: true
 
-      # Set JAVA_HOME and PATH for JDK
-      - name: Set up JDK
-        run: |
-          export JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
-          export PATH=$JAVA_HOME/bin:$PATH
+    - name: Install Bubblewrap
+      run: |
+        curl -sSL https://github.com/GoogleChromeLabs/bubblewrap/releases/download/v1.0.0/bubblewrap-1.0.0-linux-x64.tar.gz | tar -xz -C /usr/local/bin
 
-      # Install Bubblewrap
-      - name: Install Bubblewrap
-        run: |
-          npm install -g @bubblewrap/cli
+    - name: Initialize Bubblewrap (No SDK Install)
+      run: |
+        echo "No" | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive --skip-sdk --jdk $JAVA_HOME
 
-      # Initialize Bubblewrap, skipping SDK installation
-      - name: Initialize Bubblewrap (No SDK Install)
-        run: |
-          echo "No" | bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive --skip-sdk --jdk $JAVA_HOME
+    - name: Build Bubblewrap App
+      run: |
+        bubblewrap build --keystore-path gvendas.keystore --key-password ${{ secrets.KEY_PASSWORD }} --key-alias gvendas
 
-      # Build the app with Bubblewrap
-      - name: Build Android app with Bubblewrap
-        run: |
-          bubblewrap build --keystore-path gvendas.keystore --key-password ${{ secrets.KEY_PASSWORD }} --key-alias gvendas
+    - name: Generate APK
+      run: |
+        bubblewrap build --keystore-path gvendas.keystore --key-password ${{ secrets.KEY_PASSWORD }} --key-alias gvendas --output-dir ./output
 
-      # Upload the APK as an artifact (optional)
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release.apk
-          path: ./build/app-release.apk
+    - name: Upload APK as an artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-release
+        path: ./output/*.apk
