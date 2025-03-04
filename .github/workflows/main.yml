@@ -17,7 +17,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '17'
-        distribution: 'temurin'  # Adicionando a distribuição Temurin
+        distribution: 'temurin'
 
     - name: Set up Android SDK
       uses: reactivecircus/android-emulator-runner@v2
@@ -26,6 +26,16 @@ jobs:
         arch: x86_64
         target: google_apis
         force-avd-creation: true
+        cores: 2
+        avd-name: test
+        emulator-boot-timeout: 600
+        emulator-port: 5554
+        emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+        disable-animations: true
+        disable-spellchecker: false
+        disable-linux-hw-accel: auto
+        enable-hw-keyboard: false
+        channel: stable
 
     - name: Install Bubblewrap
       run: |
