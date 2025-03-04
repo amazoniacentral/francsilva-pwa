@@ -33,7 +33,7 @@ jobs:
         emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
         disable-animations: true
         disable-spellchecker: false
-        disable-linux-hw-accel: auto
+        disable-linux-hw-accel: true
         enable-hw-keyboard: false
         channel: stable
 
