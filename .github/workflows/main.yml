@@ -14,7 +14,7 @@ jobs:
 
       # Cache Node.js
       - name: Cache Node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
@@ -23,7 +23,7 @@ jobs:
 
       # Cache Android SDK
       - name: Cache Android SDK
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: $HOME/android-sdk
           key: ${{ runner.os }}-android-sdk-${{ hashFiles('**/build.gradle') }} # Se estiver usando Gradle
@@ -48,7 +48,7 @@ jobs:
 
       # Upload the APK as an artifact (optional)
       - name: Upload APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: app-release.apk
           path: ./build/app-release.apk
