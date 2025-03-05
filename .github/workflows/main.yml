@@ -81,12 +81,8 @@ jobs:
         echo "Listing files in the app/ directory"
         ls -l app/  # Listando os arquivos no diretório 'app/'
         echo "End of file listing"
-      
-   
-    - name: Executar Bubblewrap Doctor no modo silencioso
-      run: |
-        yes n | bubblewrap doctor
-    
+
+     
     
     - name: Build APK (Debug)
       run: |
