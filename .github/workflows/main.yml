@@ -58,8 +58,8 @@ jobs:
         expect <<EOF
         exp_internal 1
         spawn bubblewrap init --manifest=$PWD/app/manifest.json
-        expect "Do you want Bubblewrap to install the JDK (recommended)?" { send "n\r" }
-        expect "Do you want Bubblewrap to install the Android SDK?" { send "n\r" }
+        expect "Do you want Bubblewrap to install the JDK (recommended)?" { send "y\r" }
+        expect "Do you want Bubblewrap to install the Android SDK?" { send "y\r" }
         expect "Would you like to continue with default configurations?" { send "y\r" }
         expect "Enter the absolute path to the Keystore file" { send "$PWD/app/keystore.jks\r" }
         expect "Enter the Keystore password" { send "${{ secrets.KEYSTORE_PASSWORD }}\r" }
