@@ -56,7 +56,7 @@ jobs:
     - name: Initialize Bubblewrap project with automated answers
       run: |
         expect <<EOF
-        spawn bubblewrap init --manifest=app/manifest.json  # Usando o manifesto baixado localmente
+        spawn bubblewrap init --manifest=$PWD/app/manifest.json  # Usando o manifesto baixado localmente
         expect "Do you want to install the Android SDK?" { send "y\r" }
         expect "Do you want to install the Android JDK?" { send "y\r" }
         expect "Select Android SDK version to use" { send "17\r" }
