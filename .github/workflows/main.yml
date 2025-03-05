@@ -59,9 +59,11 @@ jobs:
           # Verifica se o arquivo foi baixado corretamente
           if [ ! -s twa-manifest.json ]; then
             echo "Erro: Manifesto não foi baixado corretamente ou está vazio."
-            cat twa-manifest.json
             exit 1
           fi
+
+          echo "Conteúdo do manifesto:"
+          cat twa-manifest.json
 
           mkdir -p $HOME/.android
           echo "${{ secrets.KEYSTORE }}" | base64 --decode > $HOME/.android/app-signing-key.jks    
