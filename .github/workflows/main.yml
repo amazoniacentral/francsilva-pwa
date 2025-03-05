@@ -84,6 +84,8 @@ jobs:
         expect eof
         EOF
 
+        ls -l app/
+
     - name: Build the APK (Release) inside app/
       run: |
         expect <<EOF
@@ -91,7 +93,7 @@ jobs:
         spawn bubblewrap build --release --sdk 17 --version 4 --keystore $PWD/app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/
         expect "Do you want Bubblewrap to install the JDK (recommended)?" { send "n\r" }
         expect "Do you want Bubblewrap to install the Android SDK?" { send "n\r" }
-        
+        expect "Would you like to continue with default configurations?" { send "y\r" }
         expect eof
         EOF
         
