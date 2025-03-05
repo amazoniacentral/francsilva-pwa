@@ -69,7 +69,7 @@ jobs:
 
     - name: Build the APK (Debug) inside app/
       run: |
-        yes | bubblewrap build --debug --sdk 17 --version 4 --keystore app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/  # Gerar o APK dentro do diretório app/
+        yes | bubblewrap build --debug --sdk 17 --version 4 --output app/  # Gerar o APK dentro do diretório app/
 
     - name: Build the APK (Release) inside app/
       run: |
