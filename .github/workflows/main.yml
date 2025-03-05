@@ -1,111 +1,72 @@
-name: Build PWA APK for Google Play Store
+name: Build TWA APK
 
+# Definindo que o workflow será executado somente em push na branch main
 on:
   push:
     branches:
-      - main  # Isso roda o workflow sempre que houver push na branch 'main'
+      - main  # Somente na branch main
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Utilizando o Ubuntu mais recente
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4  # Versão 4 do checkout
+      # Passo 1: Fazer o checkout do código
+      - name: Checkout do código
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '17'  # Usando Node.js 17
+      # Passo 2: Instalar dependências necessárias
+      - name: Instalar dependências
+        run: |
+          sudo apt update
+          sudo apt install -y openjdk-17-jdk curl unzip git wget python3 python3-pip npm
 
-    - name: Install Bubblewrap CLI globally
-      run: |
-        npm install -g @bubblewrap/cli  # Instalando o Bubblewrap CLI globalmente
+      # Passo 3: Instalar o Android SDK
+      - name: Instalar Android SDK
+        run: |
+          mkdir -p $HOME/android-sdk
+          cd $HOME/android-sdk
+          wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip
+          unzip commandlinetools-linux-*.zip
+          rm commandlinetools-linux-*.zip
 
-    - name: Install Android SDK and JDK 17
-      run: |
-        sudo apt update -y
-        sudo apt install -y openjdk-17-jdk curl unzip expect
-        
-        # Baixando e instalando o Android SDK
-        mkdir -p $HOME/android-sdk
-        curl -s https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -o commandlinetools-linux.zip
-        unzip commandlinetools-linux.zip -d $HOME/android-sdk
-        yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --update
-        yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-30"
-        
-        # Garantindo que o adb e o SDK estejam no PATH
-        export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+      # Passo 4: Configurar variáveis de ambiente
+      - name: Configurar variáveis de ambiente
+        run: |
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "PATH=$HOME/android-sdk/cmdline-tools/bin:$HOME/android-sdk/platform-tools:$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/emulator:$PATH" >> $GITHUB_ENV
 
-        # Verificando se o Java JDK 17 está instalado corretamente
-        java -version
+      # Passo 5: Aceitar licenças do Android SDK e instalar as ferramentas necessárias
+      - name: Aceitar licenças e instalar Build Tools
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-    - name: Download and save manifest locally
-      run: |
-        mkdir -p app  # Certificando-se de que o diretório app existe
-        curl -o twa-manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json  # Baixando o manifesto para o diretório app/
-        ls -l twa-manifest.json  # Verificando se o arquivo foi baixado corretamente
+      # Passo 6: Instalar o Bubblewrap
+      - name: Instalar Bubblewrap
+        run: npm install -g @bubblewrap/cli
 
-    - name: Decode Keystore from base64 and create keystore.jks inside app/
-      run: |
-        mkdir -p app  # Certificando-se de que o diretório app existe
-        echo "${{ secrets.KEYSTORE }}" | base64 --decode > app/keystore.jks  # Caminho relativo para o diretório app
-        ls -l app/keystore.jks  # Verificar se o arquivo foi gerado corretamente
+      # Passo 7: Baixar o manifest e inicializar o Bubblewrap
+      - name: Baixar o manifest e inicializar o Bubblewrap
+        run: |
+          curl -o twa-manifest.json "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
+          
+          # Decodificar o keystore base64 para o arquivo real
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > $HOME/.android/app-signing-key.jks
+          
+          # Definir as variáveis de ambiente para o keystore e sua senha
+          echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
+          
+          bubblewrap init --manifest twa-manifest.json
 
-    - name: Initialize Bubblewrap project with automated answers
-      run: |
-        expect <<EOF
-        exp_internal 1
-        spawn bubblewrap init --manifest twa-manifest.json
-        expect "Do you want Bubblewrap to install the JDK (recommended)?" { send "y\r" }
-        expect "Do you want Bubblewrap to install the Android SDK?" { send "y\r" }
-        expect "Would you like to continue with default configurations?" { send "y\r" }
-        expect "Enter the absolute path to the Keystore file" { send "$PWD/app/keystore.jks\r" }
-        expect "Enter the Keystore password" { send "${{ secrets.KEYSTORE_PASSWORD }}\r" }
-        expect "Enter the Key alias" { send "${{ secrets.KEY_ALIAS }}\r" }
-        expect eof
-        EOF
+      # Passo 8: Construir o APK
+      - name: Build do APK
+        run: bubblewrap build
 
-   
-
-    - name: Build APK (auto)
-      run: |
-        expect <<EOF
-        exp_internal 1
-        spawn bubblewrap build
-        expect {
-          "Do you want Bubblewrap to install the JDK (recommended)?" { send "n\r" }
-          "Do you want Bubblewrap to install the Android SDK?" { send "n\r" }
-          "Would you like to continue with default configurations?" { send "y\r" }
-        }
-        expect eof
-        EOF
-
-        ls -l app/
-
-        
-    - name: Build the APK (Release)
-      run: |
-        expect <<EOF
-        exp_internal 1
-        spawn bubblewrap build --skipPwaValidation --skipSigning --manifest=$PWD/app/manifest.json --output app/ --keystore $PWD/app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --no-interactive
-        expect "Do you want Bubblewrap to install the JDK (recommended)?" { send "y\r" }
-        expect "Do you want Bubblewrap to install the Android SDK?" { send "y\r" }
-        expect "Would you like to continue with default configurations?" { send "y\r" }
-        expect eof
-        EOF
-
-        ls -l app/
-
-    - name: Upload Debug APK as artifact
-      uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
-      with:
-        name: app-autoassinado
-        path: app-release-signed.apk.  # Caminho para o APK de debug dentro do diretório app
-
-    - name: Upload Release APK as artifact
-      uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
-      with:
-        name: app-release.apk
-        path: app/app-release.apk  # Caminho para o APK de release dentro do diretório app
+      # Passo 9: Fazer o upload do APK gerado como artefato
+      - name: Upload do APK como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: APK-Gerado
+          path: app-release-signed.apk
