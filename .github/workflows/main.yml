@@ -41,10 +41,15 @@ jobs:
         # Verificando se o Java JDK 17 está instalado corretamente
         java -version
 
+    - name: Generate TWA Manifest locally
+      run: |
+        curl -o twa-manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
+        cat twa-manifest.json
+
     - name: Initialize Bubblewrap project with automated answers
       run: |
         expect <<EOF
-        spawn bubblewrap init --manifest=https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
+        spawn bubblewrap init --manifest=twa-manifest.json
         expect "Do you want to install the Android SDK?" { send "y\r" }
         expect "Do you want to install the Android JDK?" { send "y\r" }
         expect "Select Android SDK version to use" { send "17\r" }
