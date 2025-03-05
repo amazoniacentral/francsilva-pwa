@@ -71,8 +71,18 @@ jobs:
         expect eof
         EOF
 
-    - name: Upload APK as artifact
-      uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
+    - name: Verify Signed APK
+      run: ls -la app/build/outputs/apk/release/
+
+    # Carregar os APKs como artefatos
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
       with:
-        name: app-release.apk
-        path: ./dist/app-release.apk
+        name: debug-apk
+        path: app/build/outputs/apk/debug/*.apk
+
+    - name: Upload Signed Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: signed-release-apk
+        path: app/build/outputs/apk/release/app-release-unsigned.apk
