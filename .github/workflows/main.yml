@@ -67,11 +67,7 @@ jobs:
         expect eof
         EOF
 
-    - name: List files in app/ directory
-      run: |
-        echo "Listing files in the app/ directory"
-        ls -l app/  # Listando os arquivos no diretório 'app/'
-        echo "End of file listing"
+   
 
     - name: Build APK (Debug)
       run: |
@@ -86,10 +82,21 @@ jobs:
         expect eof
         EOF
 
+        ls -l app/
+
         
     - name: Build the APK (Release)
       run: |
-        bubblewrap build --release --skipPwaValidation --skipSigning --manifest=$PWD/app/manifest.json --keystore $PWD/app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/ --no-interactive
+        expect <<EOF
+        exp_internal 1
+        spawn bubblewrap build --skipPwaValidation --skipSigning --manifest=$PWD/app/manifest.json --output app/ --keystore $PWD/app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --no-interactive
+        expect "Do you want Bubblewrap to install the JDK (recommended)?" { send "y\r" }
+        expect "Do you want Bubblewrap to install the Android SDK?" { send "y\r" }
+        expect "Would you like to continue with default configurations?" { send "y\r" }
+        expect eof
+        EOF
+
+        ls -l app/
 
     - name: Upload Debug APK as artifact
       uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
