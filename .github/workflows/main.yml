@@ -73,6 +73,12 @@ jobs:
         ls -l app/  # Listando os arquivos no diretório 'app/'
         echo "End of file listing"
       
+   
+    - name: Verify Bubblewrap Installation
+      run: |
+        bubblewrap doctor
+    
+    
     - name: Build APK (Debug)
       run: |
         bubblewrap build --debug --sdk 17 --version 4 --output app/ --no-interactive
