@@ -52,9 +52,24 @@ jobs:
         expect eof
         EOF
 
+    - name: Prepare Keystore from Base64
+      run: |
+        # Decodificar o keystore que está armazenado como base64 no GitHub Secrets
+        echo "$KEYSTORE" | base64 --decode > keystore.jks
+        echo "Keystore decoded successfully."
+
     - name: Build the APK
       run: |
-        yes | bubblewrap build --release --sdk 17 --version 4
+        expect <<EOF
+        spawn bubblewrap build --release --sdk 17 --version 4
+        expect "Do you want to use an existing keystore?" { send "y\r" }
+        expect "Enter keystore path" { send "keystore.jks\r" }
+        expect "Enter keystore password" { send "$KEYSTORE_PASSWORD\r" }
+        expect "Enter key alias" { send "$KEY_ALIAS\r" }
+        expect "Enter key password" { send "$KEYSTORE_PASSWORD\r" }
+        expect "Would you like to continue with default configurations?" { send "y\r" }
+        expect eof
+        EOF
 
     - name: Upload APK as artifact
       uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
