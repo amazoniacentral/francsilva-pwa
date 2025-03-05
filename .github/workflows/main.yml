@@ -41,38 +41,47 @@ jobs:
         # Verificando se o Java JDK 17 está instalado corretamente
         java -version
 
-    - name: Generate TWA Manifest locally
+    - name: Download and save manifest locally
       run: |
-        curl -o twa-manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
-        cat twa-manifest.json
+        curl -o app/manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json  # Baixando o manifesto para o diretório app/
+        ls -l app/manifest.json  # Verificando se o arquivo foi baixado corretamente
+
+    - name: Decode Keystore from base64 and create keystore.jks inside app/
+      run: |
+        mkdir -p app  # Certificando-se de que o diretório app existe
+        echo "${{ secrets.KEYSTORE }}" | base64 --decode > app/keystore.jks  # Caminho relativo para o diretório app
+        ls -l app/keystore.jks  # Verificar se o arquivo foi gerado corretamente
 
     - name: Initialize Bubblewrap project with automated answers
       run: |
         expect <<EOF
-        spawn bubblewrap init --manifest=twa-manifest.json
+        spawn bubblewrap init --manifest=app/manifest.json  # Usando o manifesto baixado localmente
         expect "Do you want to install the Android SDK?" { send "y\r" }
         expect "Do you want to install the Android JDK?" { send "y\r" }
         expect "Select Android SDK version to use" { send "17\r" }
         expect "Would you like to continue with default configurations?" { send "y\r" }
+        expect "Enter a keystore path" { send "app/keystore.jks\r" }  # Caminho relativo para o diretório app
+        expect "Enter the keystore password" { send "${{ secrets.KEYSTORE_PASSWORD }}\r" }
+        expect "Enter the key alias" { send "${{ secrets.KEY_ALIAS }}\r" }
         expect eof
         EOF
 
-    - name: Build the APK (Debug)
+    - name: Build the APK (Debug) inside app/
       run: |
-        yes | bubblewrap build --debug --sdk 17 --version 4 --keystore ${{ secrets.KEYSTORE }} --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --key-password ${{ secrets.KEY_PASSWORD }}
+        yes | bubblewrap build --debug --sdk 17 --version 4 --keystore app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/  # Gerar o APK dentro do diretório app/
 
-    - name: Build the APK (Release)
+    - name: Build the APK (Release) inside app/
       run: |
-        yes | bubblewrap build --release --sdk 17 --version 4 --keystore ${{ secrets.KEYSTORE }} --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --key-password ${{ secrets.KEY_PASSWORD }}
+        yes | bubblewrap build --release --sdk 17 --version 4 --keystore app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/  # Gerar o APK dentro do diretório app/
 
     - name: Upload Debug APK as artifact
       uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
       with:
         name: app-debug.apk
-        path: ./dist/app-debug.apk  # Ajuste o caminho para onde o APK de debug é gerado
+        path: app/app-debug.apk  # Caminho para o APK de debug dentro do diretório app
 
     - name: Upload Release APK as artifact
       uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
       with:
         name: app-release.apk
-        path: ./dist/app-release.apk  # Ajuste o caminho para onde o APK de release é gerado
+        path: app/app-release.apk  # Caminho para o APK de release dentro do diretório app
