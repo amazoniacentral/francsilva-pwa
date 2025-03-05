@@ -71,7 +71,7 @@ jobs:
           java -version
           
           # Inicializar o Bubblewrap sem interações
-          yes "n" | bubblewrap init --manifest twa-manifest.json
+          printf "n\nn\ny\n" | bubblewrap init --manifest twa-manifest.json
 
       # Passo 8: Construir o APK
       - name: Build do APK
