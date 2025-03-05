@@ -43,6 +43,7 @@ jobs:
 
     - name: Download and save manifest locally
       run: |
+        mkdir -p app  # Certificando-se de que o diretório app existe
         curl -o app/manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json  # Baixando o manifesto para o diretório app/
         ls -l app/manifest.json  # Verificando se o arquivo foi baixado corretamente
 
