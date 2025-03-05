@@ -44,8 +44,8 @@ jobs:
     - name: Download and save manifest locally
       run: |
         mkdir -p app  # Certificando-se de que o diretório app existe
-        curl -o app/manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json  # Baixando o manifesto para o diretório app/
-        ls -l app/manifest.json  # Verificando se o arquivo foi baixado corretamente
+        curl -o twa-manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json  # Baixando o manifesto para o diretório app/
+        ls -l twa-manifest.json  # Verificando se o arquivo foi baixado corretamente
 
     - name: Decode Keystore from base64 and create keystore.jks inside app/
       run: |
@@ -57,7 +57,7 @@ jobs:
       run: |
         expect <<EOF
         exp_internal 1
-        spawn bubblewrap init --manifest="https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json" --directory=app/
+        spawn bubblewrap init --manifest twa-manifest.json
         expect "Do you want Bubblewrap to install the JDK (recommended)?" { send "y\r" }
         expect "Do you want Bubblewrap to install the Android SDK?" { send "y\r" }
         expect "Would you like to continue with default configurations?" { send "y\r" }
@@ -73,10 +73,10 @@ jobs:
       run: |
         expect <<EOF
         exp_internal 1
-        spawn bubblewrap build --skipPwaValidation --skipSigning --manifest=$PWD/app/manifest.json --output app/ --no-interactive
+        spawn bubblewrap build
         expect {
-          "Do you want Bubblewrap to install the JDK (recommended)?" { send "y\r" }
-          "Do you want Bubblewrap to install the Android SDK?" { send "y\r" }
+          "Do you want Bubblewrap to install the JDK (recommended)?" { send "n\r" }
+          "Do you want Bubblewrap to install the Android SDK?" { send "n\r" }
           "Would you like to continue with default configurations?" { send "y\r" }
         }
         expect eof
