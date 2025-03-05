@@ -62,7 +62,10 @@ jobs:
           # Definir as variáveis de ambiente para o keystore e sua senha
           echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
           echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
-          
+
+          # Definir o caminho do JDK para evitar a solicitação de instalação do JDK
+          echo "BUBBLEWRAP_JDK_PATH=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
+
           # Inicializar o Bubblewrap
           bubblewrap init --manifest twa-manifest.json
 
