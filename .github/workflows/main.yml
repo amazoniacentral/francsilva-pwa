@@ -79,9 +79,9 @@ jobs:
         exp_internal 1
         spawn bubblewrap build --debug --sdk 17 --version 4 --output app/
         expect {
-            "Do you want Bubblewrap to install the JDK (recommended)?" { send "y\r" }
-            "Do you want Bubblewrap to install the Android SDK?" { send "y\r" }
-            "Would you like to continue with default configurations?" { send "y\r" }
+            "Do you want Bubblewrap to install the JDK (recommended)?" { send "y\r"; exp_continue }
+            "Do you want Bubblewrap to install the Android SDK?" { send "y\r"; exp_continue }
+            "Would you like to continue with default configurations?" { send "y\r"; exp_continue }
         }
         expect eof
         EOF
