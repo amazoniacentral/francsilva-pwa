@@ -52,19 +52,8 @@ jobs:
       - name: Instalar Bubblewrap
         run: npm install -g @bubblewrap/cli
 
-      - name: Baixar o manifest e inicializar o Bubblewrap
+      - name: Inicializar o Bubblewrap diretamente com a URL
         run: |
-          curl -o twa-manifest.json "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
-
-          # Verifica se o arquivo foi baixado corretamente
-          if [ ! -s twa-manifest.json ]; then
-            echo "Erro: Manifesto não foi baixado corretamente ou está vazio."
-            exit 1
-          fi
-
-          echo "Conteúdo do manifesto:"
-          cat twa-manifest.json
-
           mkdir -p $HOME/.android
           echo "${{ secrets.KEYSTORE }}" | base64 --decode > $HOME/.android/app-signing-key.jks    
           echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
@@ -73,7 +62,7 @@ jobs:
           java -version
           sdkmanager --version
           
-          yes | bubblewrap init --manifest "$(pwd)/twa-manifest.json" --jdkPath $HOME/.bubblewrap/jdk --sdkPath $HOME/android-sdk --skipPwaValidation
+          yes | bubblewrap init --manifest "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json" --jdkPath $HOME/.bubblewrap/jdk --sdkPath $HOME/android-sdk --skipPwaValidation
 
       - name: Build do APK
         run: yes | bubblewrap build
