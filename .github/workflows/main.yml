@@ -1,35 +1,33 @@
 name: Build TWA APK
 
-# Definindo que o workflow será executado somente em push na branch main
 on:
   push:
     branches:
-      - main  # Somente na branch main
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Utilizando o Ubuntu mais recente
+    runs-on: ubuntu-latest
 
     steps:
-      # Passo 1: Fazer o checkout do código
       - name: Checkout do código
         uses: actions/checkout@v3
 
-      # Passo 2: Instalar dependências necessárias
       - name: Instalar dependências
         run: |
           sudo apt update
           sudo apt install -y curl unzip git wget python3 python3-pip npm
 
-      # Passo 3: Instalar o JDK e Android SDK nos diretórios corretos
       - name: Instalar JDK e Android SDK
         run: |
           # Criar diretório para o JDK
           mkdir -p $HOME/.bubblewrap/jdk
           cd $HOME/.bubblewrap/jdk
-          wget https://github.com/adoptium/temurin17-binaries/releases/latest/download/OpenJDK17U-jdk_x64_linux_hotspot.tar.gz
-          tar -xvf OpenJDK17U-jdk_x64_linux_hotspot.tar.gz --strip-components=1
-          rm OpenJDK17U-jdk_x64_linux_hotspot.tar.gz
+          
+          # Baixar uma versão fixa do JDK 17
+          wget https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.11%2B9/OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz
+          tar -xvf OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz --strip-components=1
+          rm OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz
           
           # Criar diretório para o Android SDK
           mkdir -p $HOME/android-sdk/cmdline-tools
@@ -37,9 +35,8 @@ jobs:
           wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip
           unzip commandlinetools-linux-*.zip
           rm commandlinetools-linux-*.zip
-          mv cmdline-tools latest  # Renomeia o diretório para 'latest'
+          mv cmdline-tools latest
 
-      # Passo 4: Configurar variáveis de ambiente
       - name: Configurar variáveis de ambiente
         run: |
           echo "JAVA_HOME=$HOME/.bubblewrap/jdk" >> $GITHUB_ENV
@@ -47,41 +44,30 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/.bubblewrap/jdk/bin:$HOME/android-sdk/cmdline-tools/bin:$HOME/android-sdk/platform-tools:$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/emulator:$PATH" >> $GITHUB_ENV
 
-      # Passo 5: Aceitar licenças do Android SDK e instalar as ferramentas necessárias
       - name: Aceitar licenças e instalar Build Tools
         run: |
           yes | sdkmanager --licenses
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      # Passo 6: Instalar o Bubblewrap
       - name: Instalar Bubblewrap
         run: npm install -g @bubblewrap/cli
 
-      # Passo 7: Baixar o manifest e inicializar o Bubblewrap
       - name: Baixar o manifest e inicializar o Bubblewrap
         run: |
-          # Baixar o manifest
-          curl -o twa-manifest.json "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"    
-          # Criar diretório para o keystore se não existir
+          curl -o twa-manifest.json "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
           mkdir -p $HOME/.android
-          # Decodificar o keystore base64 para o arquivo real
           echo "${{ secrets.KEYSTORE }}" | base64 --decode > $HOME/.android/app-signing-key.jks    
-          # Definir as variáveis de ambiente para o keystore e sua senha
           echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
           echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
           
-          # Verificar se o JDK e o Android SDK estão corretamente configurados
           java -version
           sdkmanager --version
           
-          # Inicializar o Bubblewrap sem interações
           printf "y\ny\ny\ny\ny\n" | bubblewrap init --manifest twa-manifest.json
 
-      # Passo 8: Construir o APK
       - name: Build do APK
         run: bubblewrap build
 
-      # Passo 9: Fazer o upload do APK gerado como artefato
       - name: Upload do APK como artefato
         uses: actions/upload-artifact@v4
         with:
