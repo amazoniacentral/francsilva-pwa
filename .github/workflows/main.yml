@@ -73,7 +73,7 @@ jobs:
           
           # Inicializar o Bubblewrap sem interações
           # Inicializar o Bubblewrap, respondendo 'não' e passando o caminho completo do JDK
-          printf "y\ny\ny\ny\ny" | bubblewrap init --manifest twa-manifest.json
+          printf "y\ny\ny\ny\ny\n" | bubblewrap init --manifest twa-manifest.json
 
           # Capturar o caminho do JDK instalado automaticamente
           #export JAVA_HOME=$(dirname $(dirname $(which java)))
