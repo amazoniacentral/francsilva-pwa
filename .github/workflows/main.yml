@@ -51,29 +51,26 @@ jobs:
       - name: Baixar o manifest e inicializar o Bubblewrap
         run: |
           # Baixar o manifest
-          curl -o twa-manifest.json "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
-          
+          curl -o twa-manifest.json "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"    
           # Criar diretório para o keystore se não existir
           mkdir -p $HOME/.android
-
           # Decodificar o keystore base64 para o arquivo real
-          echo "${{ secrets.KEYSTORE }}" | base64 --decode > $HOME/.android/app-signing-key.jks
-          
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > $HOME/.android/app-signing-key.jks    
           # Definir as variáveis de ambiente para o keystore e sua senha
           echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
           echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
-
           # Configurar as variáveis do JDK
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
           export PATH=$JAVA_HOME/bin:$PATH
           export BUBBLEWRAP_JDK_PATH=$JAVA_HOME
-
-          # Verificar se o JDK está corretamente configurado
+          # Configurar o Android SDK
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/emulator:$PATH
+          # Verificar se o JDK e o Android SDK estão corretamente configurados
           java -version
-          
+          sdkmanager --version
           # Inicializar o Bubblewrap sem interações
-          # Inicializar o Bubblewrap, respondendo 'não' e passando o caminho completo do JDK
-          printf "y\ny\ny\ny\ny\ny\n" | bubblewrap init --manifest twa-manifest.json
+          printf "n\n$JAVA_HOME\nn\n$ANDROID_HOME\ny\n" | bubblewrap init --manifest twa-manifest.json
 
       
       # Passo 8: Construir o APK
