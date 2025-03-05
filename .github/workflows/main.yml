@@ -83,14 +83,14 @@ jobs:
         echo "End of file listing"
       
    
-    - name: Verify Bubblewrap Installation
+    - name: Executar Bubblewrap Doctor no modo silencioso
       run: |
-        bubblewrap doctor
+        yes n | bubblewrap doctor
     
     
     - name: Build APK (Debug)
       run: |
-        bubblewrap build --debug --sdk 17 --version 4 --output app/ --no-interactive
+        CI=true bubblewrap build --debug --sdk 17 --version 4 --output app/ --no-interactive
 
     - name: Build the APK (Release) inside app/
       run: |
