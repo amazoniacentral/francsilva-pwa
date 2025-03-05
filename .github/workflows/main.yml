@@ -66,6 +66,7 @@ jobs:
           # Configurar as variáveis do JDK
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
           export PATH=$JAVA_HOME/bin:$PATH
+          export BUBBLEWRAP_JDK_PATH=$JAVA_HOME
 
           # Verificar se o JDK está corretamente configurado
           java -version
