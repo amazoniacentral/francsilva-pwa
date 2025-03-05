@@ -73,14 +73,14 @@ jobs:
           
           # Inicializar o Bubblewrap sem interações
           # Inicializar o Bubblewrap, respondendo 'não' e passando o caminho completo do JDK
-          #printf "y\ny\ny" | bubblewrap init --manifest twa-manifest.json
+          printf "y\ny\ny\ny\ny" | bubblewrap init --manifest twa-manifest.json
 
           # Capturar o caminho do JDK instalado automaticamente
-          export JAVA_HOME=$(dirname $(dirname $(which java)))
+          #export JAVA_HOME=$(dirname $(dirname $(which java)))
           # Verificar se o JAVA_HOME foi configurado corretamente
-          echo $JAVA_HOME
+          #echo $JAVA_HOME
           # Inicializar o Bubblewrap, respondendo 'não' e passando o caminho do JDK
-          printf "No\n$JAVA_HOME\n" | bubblewrap init --manifest twa-manifest.json
+          #printf "No\n$JAVA_HOME\n" | bubblewrap init --manifest twa-manifest.json
 
       # Passo 8: Construir o APK
       - name: Build do APK
