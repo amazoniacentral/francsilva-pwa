@@ -77,7 +77,7 @@ jobs:
       run: |
         expect <<EOF
         exp_internal 1
-        spawn bubblewrap build --debug --sdk 17 --version 4 --output app/
+        spawn bubblewrap build --debug --sdk 17 --version 4 --output app/ | sed 's/\x1b
         expect "Do you want Bubblewrap to install the JDK (recommended)?" { send "y\r" }
         expect "Do you want Bubblewrap to install the Android SDK?" { send "y\r" }
         expect "Would you like to continue with default configurations?" { send "y\r" }
