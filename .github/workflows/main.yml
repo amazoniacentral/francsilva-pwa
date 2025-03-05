@@ -68,6 +68,9 @@ jobs:
           echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
           echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
 
+          # Verificar a versão do JDK para garantir que ele está instalado corretamente
+          java -version
+          
           # Inicializar o Bubblewrap sem interações
           bubblewrap init --manifest twa-manifest.json --no-prompt
 
