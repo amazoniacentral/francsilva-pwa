@@ -63,12 +63,11 @@ jobs:
           echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
           echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
 
-          # Definir o caminho do JDK para evitar a solicitação de instalação do JDK
-          echo "BUBBLEWRAP_JDK_PATH=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
-          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
-          echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
+          # Configurar as variáveis do JDK
+          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+          export PATH=$JAVA_HOME/bin:$PATH
 
-          # Verificar a versão do JDK para garantir que ele está instalado corretamente
+          # Verificar se o JDK está corretamente configurado
           java -version
           
           # Inicializar o Bubblewrap sem interações
