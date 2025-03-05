@@ -72,11 +72,11 @@ jobs:
       
     - name: Build the APK (Debug) inside app/
       run: |
-        yes | bubblewrap build --debug --sdk 17 --version 4 --output app/  # Gerar o APK dentro do diretório app/
+        bubblewrap build --debug --sdk 17 --version 4 --output app/  # Gerar o APK dentro do diretório app/
 
     - name: Build the APK (Release) inside app/
       run: |
-        yes | bubblewrap build --release --sdk 17 --version 4 --keystore $PWD/app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/  # Gerar o APK dentro do diretório app/
+        bubblewrap build --release --sdk 17 --version 4 --keystore $PWD/app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/  # Gerar o APK dentro do diretório app/
 
     - name: Upload Debug APK as artifact
       uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
