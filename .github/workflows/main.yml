@@ -75,4 +75,4 @@ jobs:
       uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
       with:
         name: app-release.apk
-        path: ./app-release.apk
+        path: ./dist/app-release.apk
