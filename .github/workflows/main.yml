@@ -24,11 +24,12 @@ jobs:
       # Passo 3: Instalar o Android SDK
       - name: Instalar Android SDK
         run: |
-          mkdir -p $HOME/android-sdk
-          cd $HOME/android-sdk
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          cd $HOME/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip
           unzip commandlinetools-linux-*.zip
           rm commandlinetools-linux-*.zip
+          mv cmdline-tools latest  # Renomeia o diretório para 'latest'
 
       # Passo 4: Configurar variáveis de ambiente
       - name: Configurar variáveis de ambiente
