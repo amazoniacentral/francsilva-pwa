@@ -53,6 +53,15 @@ jobs:
         echo "${{ secrets.KEYSTORE }}" | base64 --decode > app/keystore.jks  # Caminho relativo para o diretório app
         ls -l app/keystore.jks  # Verificar se o arquivo foi gerado corretamente
 
+    
+    - name: Instalar JDK 17 manualmente
+      run: |
+        sudo apt update -y
+        sudo apt install -y openjdk-17-jdk
+        export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))
+        echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+    
+    
     - name: Initialize Bubblewrap project with automated answers
       run: |
         expect <<EOF
