@@ -65,9 +65,11 @@ jobs:
 
           # Definir o caminho do JDK para evitar a solicitação de instalação do JDK
           echo "BUBBLEWRAP_JDK_PATH=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
+          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
+          echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
 
-          # Inicializar o Bubblewrap
-          bubblewrap init --manifest twa-manifest.json
+          # Inicializar o Bubblewrap sem interações
+          bubblewrap init --manifest twa-manifest.json --no-prompt
 
       # Passo 8: Construir o APK
       - name: Build do APK
