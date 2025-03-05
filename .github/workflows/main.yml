@@ -70,7 +70,7 @@ jobs:
           java -version
           sdkmanager --version
           # Inicializar o Bubblewrap sem interações
-          printf "n\n$JAVA_HOME\nn\n$ANDROID_HOME\ny\n" | bubblewrap init --manifest twa-manifest.json
+          printf "y\ny\ny\ny\ny\n" | bubblewrap init --manifest twa-manifest.json
 
       
       # Passo 8: Construir o APK
