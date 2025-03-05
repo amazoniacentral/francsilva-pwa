@@ -81,7 +81,6 @@ jobs:
         expect "Do you want Bubblewrap to install the JDK (recommended)?" { send "y\r" }
         expect "Do you want Bubblewrap to install the Android SDK?" { send "y\r" }
         expect "Would you like to continue with default configurations?" { send "y\r" }
-        expect "Would you like to continue with default configurations?" { send "y\r" }
         expect eof
         EOF
 
