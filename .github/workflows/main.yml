@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60  # Aumenta o timeout para 60 minutos
 
     steps:
     - name: Checkout code
@@ -21,24 +20,41 @@ jobs:
 
     - name: Install Bubblewrap CLI globally
       run: |
-        echo "Instalando o Bubblewrap CLI..."
         npm install -g @bubblewrap/cli  # Instalando o Bubblewrap CLI globalmente
-        echo "Bubblewrap CLI instalado com sucesso."
 
-    - name: Initialize Bubblewrap project
+    - name: Install Android SDK and JDK 17
       run: |
-        echo "Iniciando o Bubblewrap init..."
+        sudo apt update -y
+        sudo apt install -y openjdk-17-jdk curl unzip expect
         
-        # Usando `yes` para automatizar as interações com o SDK e JDK
-        yes "y" | bubblewrap init --manifest=https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json | tee result.log | grep -v "yes" | grep -v "no" 
+        # Baixando e instalando o Android SDK
+        mkdir -p $HOME/android-sdk
+        curl -s https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -o commandlinetools-linux.zip
+        unzip commandlinetools-linux.zip -d $HOME/android-sdk
+        yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --update
+        yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-30"
         
-        echo "Bubblewrap init concluído!"
+        # Garantindo que o adb e o SDK estejam no PATH
+        export ANDROID_HOME=$HOME/android-sdk
+        export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+
+        # Verificando se o Java JDK 17 está instalado corretamente
+        java -version
+
+    - name: Initialize Bubblewrap project with automated answers
+      run: |
+        expect <<EOF
+        spawn bubblewrap init --manifest=https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
+        expect "Do you want to install the Android SDK?" { send "y\r" }
+        expect "Do you want to install the Android JDK?" { send "y\r" }
+        expect "Select Android SDK version to use" { send "17\r" }
+        expect "Would you like to continue with default configurations?" { send "y\r" }
+        expect eof
+        EOF
 
     - name: Build the APK
       run: |
-        echo "Iniciando o build do APK..."
-        bubblewrap build --release --sdk 17 --version 4
-        echo "Build do APK concluído."
+        yes | bubblewrap build --release --sdk 17 --version 4
 
     - name: Upload APK as artifact
       uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
