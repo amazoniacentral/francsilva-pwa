@@ -72,7 +72,7 @@ jobs:
           java -version
           
           # Inicializar o Bubblewrap sem interações
-          printf "n\nn\ny\n/usr/lib/jvm/java-17-openjdk-amd64\n" | bubblewrap init --manifest twa-manifest.json
+          printf "n\n/usr/lib/jvm/java-17-openjdk-amd64\n" | bubblewrap init --manifest twa-manifest.json
 
       # Passo 8: Construir o APK
       - name: Build do APK
