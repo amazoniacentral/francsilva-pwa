@@ -54,7 +54,15 @@ jobs:
 
       - name: Baixar o manifest e inicializar o Bubblewrap
         run: |
-          curl -o $HOME/twa-manifest.json "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
+          curl -o twa-manifest.json "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
+
+          # Verifica se o arquivo foi baixado corretamente
+          if [ ! -s twa-manifest.json ]; then
+            echo "Erro: Manifesto não foi baixado corretamente ou está vazio."
+            cat twa-manifest.json
+            exit 1
+          fi
+
           mkdir -p $HOME/.android
           echo "${{ secrets.KEYSTORE }}" | base64 --decode > $HOME/.android/app-signing-key.jks    
           echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
@@ -63,7 +71,7 @@ jobs:
           java -version
           sdkmanager --version
           
-          yes | bubblewrap init --manifest $HOME/twa-manifest.json --jdkPath $HOME/.bubblewrap/jdk --sdkPath $HOME/android-sdk --skipPwaValidation
+          yes | bubblewrap init --manifest "$(pwd)/twa-manifest.json" --jdkPath $HOME/.bubblewrap/jdk --sdkPath $HOME/android-sdk --skipPwaValidation
 
       - name: Build do APK
         run: yes | bubblewrap build
