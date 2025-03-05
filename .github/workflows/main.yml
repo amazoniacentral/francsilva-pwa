@@ -50,8 +50,12 @@ jobs:
       # Passo 7: Baixar o manifest e inicializar o Bubblewrap
       - name: Baixar o manifest e inicializar o Bubblewrap
         run: |
+          # Baixar o manifest
           curl -o twa-manifest.json "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
           
+          # Criar diretório para o keystore se não existir
+          mkdir -p $HOME/.android
+
           # Decodificar o keystore base64 para o arquivo real
           echo "${{ secrets.KEYSTORE }}" | base64 --decode > $HOME/.android/app-signing-key.jks
           
@@ -59,6 +63,7 @@ jobs:
           echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
           echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
           
+          # Inicializar o Bubblewrap
           bubblewrap init --manifest twa-manifest.json
 
       # Passo 8: Construir o APK
