@@ -25,8 +25,8 @@ jobs:
     - name: Install Android SDK and JDK 17
       run: |
         sudo apt update -y
-        sudo apt install -y openjdk-17-jdk curl unzip
-        
+        sudo apt install -y openjdk-17-jdk curl unzip expect  # Instalar expect
+
         # Baixando e instalando o Android SDK
         mkdir -p $HOME/android-sdk
         curl -s https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -o commandlinetools-linux.zip
