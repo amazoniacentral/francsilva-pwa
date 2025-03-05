@@ -61,7 +61,7 @@ jobs:
         expect "Do you want to install the Android JDK?" { send "y\r" }
         expect "Select Android SDK version to use" { send "17\r" }
         expect "Would you like to continue with default configurations?" { send "y\r" }
-        expect "Enter a keystore path" { send "app/keystore.jks\r" }  # Caminho relativo para o diretório app
+        expect "Enter a keystore path" { send "$PWD/app/keystore.jks\r" }  # Caminho relativo para o diretório app
         expect "Enter the keystore password" { send "${{ secrets.KEYSTORE_PASSWORD }}\r" }
         expect "Enter the key alias" { send "${{ secrets.KEY_ALIAS }}\r" }
         expect eof
@@ -73,7 +73,7 @@ jobs:
 
     - name: Build the APK (Release) inside app/
       run: |
-        yes | bubblewrap build --release --sdk 17 --version 4 --keystore app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/  # Gerar o APK dentro do diretório app/
+        yes | bubblewrap build --release --sdk 17 --version 4 --keystore $PWD/app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/  # Gerar o APK dentro do diretório app/
 
     - name: Upload Debug APK as artifact
       uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
