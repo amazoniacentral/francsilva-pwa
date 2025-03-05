@@ -75,8 +75,18 @@ jobs:
 
     - name: Build APK (Debug)
       run: |
-        bubblewrap build --skipPwaValidation --skipSigning --manifest=$PWD/app/manifest.json --output app/ --no-interactive
+        expect <<EOF
+        exp_internal 1
+        spawn bubblewrap build --skipPwaValidation --skipSigning --manifest=$PWD/app/manifest.json --output app/ --no-interactive
+        expect {
+          "Do you want Bubblewrap to install the JDK (recommended)?" { send "y\r" }
+          "Do you want Bubblewrap to install the Android SDK?" { send "y\r" }
+          "Would you like to continue with default configurations?" { send "y\r" }
+        }
+        expect eof
+        EOF
 
+        
     - name: Build the APK (Release)
       run: |
         bubblewrap build --release --skipPwaValidation --skipSigning --manifest=$PWD/app/manifest.json --keystore $PWD/app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/ --no-interactive
