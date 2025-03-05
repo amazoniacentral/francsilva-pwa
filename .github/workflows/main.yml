@@ -63,10 +63,10 @@ jobs:
           java -version
           sdkmanager --version
           
-          printf "y\ny\ny\ny\ny\n" | bubblewrap init --manifest twa-manifest.json
+          yes | bubblewrap init --manifest twa-manifest.json --jdkPath $HOME/.bubblewrap/jdk --sdkPath $HOME/android-sdk --skipPwaValidation
 
       - name: Build do APK
-        run: bubblewrap build
+        run: yes | bubblewrap build
 
       - name: Upload do APK como artefato
         uses: actions/upload-artifact@v4
