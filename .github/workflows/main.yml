@@ -25,8 +25,8 @@ jobs:
     - name: Install Android SDK and JDK 17
       run: |
         sudo apt update -y
-        sudo apt install -y openjdk-17-jdk curl unzip expect  # Instalar expect
-
+        sudo apt install -y openjdk-17-jdk curl unzip expect
+        
         # Baixando e instalando o Android SDK
         mkdir -p $HOME/android-sdk
         curl -s https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -o commandlinetools-linux.zip
@@ -34,24 +34,24 @@ jobs:
         yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --update
         yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-30"
         
-        # Configurando variáveis de ambiente
-        echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "$HOME/android-sdk/platform-tools:$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+        # Garantindo que o adb e o SDK estejam no PATH
+        export ANDROID_HOME=$HOME/android-sdk
+        export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
 
-        # Verificando instalação do Java
+        # Verificando se o Java JDK 17 está instalado corretamente
         java -version
 
     - name: Download and save manifest locally
       run: |
-        mkdir -p app
-        curl -o app/manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
-        ls -l app/manifest.json
+        mkdir -p app  # Certificando-se de que o diretório app existe
+        curl -o app/manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json  # Baixando o manifesto para o diretório app/
+        ls -l app/manifest.json  # Verificando se o arquivo foi baixado corretamente
 
     - name: Decode Keystore from base64 and create keystore.jks inside app/
       run: |
-        mkdir -p app
-        echo "${{ secrets.KEYSTORE }}" | base64 --decode > app/keystore.jks
-        ls -l app/keystore.jks
+        mkdir -p app  # Certificando-se de que o diretório app existe
+        echo "${{ secrets.KEYSTORE }}" | base64 --decode > app/keystore.jks  # Caminho relativo para o diretório app
+        ls -l app/keystore.jks  # Verificar se o arquivo foi gerado corretamente
 
     - name: Initialize Bubblewrap project with automated answers
       run: |
@@ -75,20 +75,20 @@ jobs:
 
     - name: Build APK (Debug)
       run: |
-        bubblewrap build --skipPwaValidation --skipSigning --manifest=$PWD/app/manifest.json --output app/
+        bubblewrap build --skipPwaValidation --skipSigning --manifest=$PWD/app/manifest.json --output app/ --no-interactive
 
-    - name: Build APK (Release)
+    - name: Build the APK (Release)
       run: |
-        bubblewrap build --skipPwaValidation --manifest=$PWD/app/manifest.json --signingKeyPath=$PWD/app/keystore.jks --signingKeyAlias=${{ secrets.KEY_ALIAS }} --output app/
+        bubblewrap build --release --skipPwaValidation --skipSigning --manifest=$PWD/app/manifest.json --keystore $PWD/app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/ --no-interactive
 
     - name: Upload Debug APK as artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
       with:
         name: app-debug.apk
-        path: app/app-debug.apk
+        path: app/app-debug.apk  # Caminho para o APK de debug dentro do diretório app
 
     - name: Upload Release APK as artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
       with:
         name: app-release.apk
-        path: app/app-release.apk
+        path: app/app-release.apk  # Caminho para o APK de release dentro do diretório app
