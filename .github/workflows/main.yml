@@ -82,8 +82,14 @@ jobs:
 
     - name: Build the APK (Release) inside app/
       run: |
-        bubblewrap build --release --sdk 17 --version 4 --keystore $PWD/app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/  # Gerar o APK dentro do diretório app/
-
+        expect <<EOF
+        exp_internal 1
+        spawn bubblewrap build --release --sdk 17 --version 4 --keystore $PWD/app/keystore.jks --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --output app/
+        expect "Do you want Bubblewrap to install the JDK (recommended)?" { send "n\r" }
+        expect "Do you want Bubblewrap to install the Android SDK?" { send "n\r" }
+        expect eof
+        EOF
+        
     - name: Upload Debug APK as artifact
       uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
       with:
