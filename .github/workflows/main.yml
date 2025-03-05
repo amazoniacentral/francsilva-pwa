@@ -52,37 +52,22 @@ jobs:
         expect eof
         EOF
 
-    - name: Prepare Keystore from Base64
+    - name: Build the APK (Debug)
       run: |
-        # Decodificar o keystore que está armazenado como base64 no GitHub Secrets
-        echo "$KEYSTORE" | base64 --decode > keystore.jks
-        echo "Keystore decoded successfully."
+        yes | bubblewrap build --debug --sdk 17 --version 4 --keystore ${{ secrets.KEYSTORE }} --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --key-password ${{ secrets.KEY_PASSWORD }}
 
-    - name: Build the APK
+    - name: Build the APK (Release)
       run: |
-        expect <<EOF
-        spawn bubblewrap build --release --sdk 17 --version 4
-        expect "Do you want to use an existing keystore?" { send "y\r" }
-        expect "Enter keystore path" { send "keystore.jks\r" }
-        expect "Enter keystore password" { send "$KEYSTORE_PASSWORD\r" }
-        expect "Enter key alias" { send "$KEY_ALIAS\r" }
-        expect "Enter key password" { send "$KEYSTORE_PASSWORD\r" }
-        expect "Would you like to continue with default configurations?" { send "y\r" }
-        expect eof
-        EOF
+        yes | bubblewrap build --release --sdk 17 --version 4 --keystore ${{ secrets.KEYSTORE }} --keystore-password ${{ secrets.KEYSTORE_PASSWORD }} --key-alias ${{ secrets.KEY_ALIAS }} --key-password ${{ secrets.KEY_PASSWORD }}
 
-    - name: Verify Signed APK
-      run: ls -la app/build/outputs/apk/release/
-
-    # Carregar os APKs como artefatos
-    - name: Upload Debug APK
-      uses: actions/upload-artifact@v4
+    - name: Upload Debug APK as artifact
+      uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
       with:
-        name: debug-apk
-        path: app/build/outputs/apk/debug/*.apk
+        name: app-debug.apk
+        path: ./dist/app-debug.apk  # Ajuste o caminho para onde o APK de debug é gerado
 
-    - name: Upload Signed Release APK
-      uses: actions/upload-artifact@v4
+    - name: Upload Release APK as artifact
+      uses: actions/upload-artifact@v4  # Usando a versão v4 do upload-artifact
       with:
-        name: signed-release-apk
-        path: app/build/outputs/apk/release/app-release-unsigned.apk
+        name: app-release.apk
+        path: ./dist/app-release.apk  # Ajuste o caminho para onde o APK de release é gerado
