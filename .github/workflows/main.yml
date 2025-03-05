@@ -67,8 +67,11 @@ jobs:
         expect eof
         EOF
     
-    - name: List files after initialization
-      run: ls -l
+    - name: List files in app/ directory
+      run: |
+        echo "Listing files in the app/ directory"
+        ls -l app/  # Listando os arquivos no diretório 'app/'
+        echo "End of file listing"
       
     - name: Build the APK (Debug) inside app/
       run: |
