@@ -27,9 +27,9 @@ jobs:
         sudo apt-get install -y jq # Para ler arquivos JSON
         # Remover SDK antigo e instalar cmdline-tools manualmente
         sudo apt-get remove -y android-sdk
+        sudo mkdir -p /usr/lib/android-sdk/cmdline-tools
         wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-        sudo mkdir -p /usr/lib/android-sdk
-        sudo unzip cmdline-tools.zip -d /usr/lib/android-sdk
+        sudo unzip cmdline-tools.zip -d /usr/lib/android-sdk/cmdline-tools
         sudo rm cmdline-tools.zip
         # Configurar Bubblewrap
         npm install -g @bubblewrap/cli
@@ -42,6 +42,7 @@ jobs:
         sudo chmod +x /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager
         # Aceitar licenças do Android SDK
         yes | sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+
 
     - name: Configurar Keystore e Variáveis de Ambiente
       run: |
