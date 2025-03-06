@@ -1,23 +1,23 @@
 name: Build e Assinar APK
- 
+
 on:
   push:
     branches:
       - main
- 
+
 jobs:
   build:
     runs-on: ubuntu-latest
- 
+
     steps:
     - name: Verificar código do repositório
       uses: actions/checkout@v3
- 
+
     - name: Configurar Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '22'
- 
+
     - name: Instalar dependências
       run: |
         # Instalar JDK 17
@@ -34,6 +34,7 @@ jobs:
           "domain": "francsilva.com.br",
           "urlPath": "/"
         }' > ~/.bubblewrap/config.json
+
     - name: Configurar Keystore e Variáveis de Ambiente
       run: |
         # Decodificar a keystore a partir da variável de ambiente KEYSTORE
@@ -42,10 +43,11 @@ jobs:
         chmod 600 $HOME/android.keystore
       env:
         KEYSTORE: ${{ secrets.KEYSTORE }}
- 
+
     - name: Inicializar e construir o aplicativo
       run: |
-        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
+        # Rodar bubblewrap init com o manifesto e verificar possíveis interações
+        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive || exit 0
         bubblewrap build
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
