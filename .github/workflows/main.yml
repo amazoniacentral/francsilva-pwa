@@ -1,4 +1,4 @@
-name: Build APK
+name: Build e Assinar APK
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
     - name: Configurar Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '22' 
+        node-version: '22'
 
     - name: Instalar dependências
       run: |
@@ -34,6 +34,15 @@ jobs:
           "domain": "francsilva.com.br",
           "urlPath": "/"
         }' > ~/.bubblewrap/config.json
+
+    - name: Configurar Keystore e Variáveis de Ambiente
+      run: |
+        # Decodificar a keystore a partir da variável de ambiente KEYSTORE
+        echo "$KEYSTORE" | base64 --decode > $HOME/android.keystore
+        # Definir permissões adequadas para a keystore
+        chmod 600 $HOME/android.keystore
+      env:
+        KEYSTORE: ${{ secrets.KEYSTORE }}
 
     - name: Inicializar e construir o aplicativo
       run: |
