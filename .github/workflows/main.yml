@@ -18,85 +18,42 @@ jobs:
       with:
         node-version: "22"
 
-    #- name: Instalar dependências
-    #  run: |
-    #    rm -rf .bubblewrap
-    #    # Instalar JDK 17
-    #    sudo apt-get update
-    #    sudo apt-get install -y openjdk-17-jdk
-    #    sudo apt-get install jq #ler arquivos
-    #    # Instalar Android SDK
-    #    sudo apt-get install -y android-sdk
-    #    # Configurar Bubblewrap
-    #    npm install -g @bubblewrap/cli
-    #    mkdir -p ~/.bubblewrap
-    #    echo '{
-    #      "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
-    #      "androidSdkPath": "/usr/lib/android-sdk"      
-    #    }' > ~/.bubblewrap/config.json
-
     - name: Instalar dependências
       run: |
-        rm -rf .bubblewrap
-        # Instalar JDK 17
-        sudo apt-get update
-        sudo apt-get install -y openjdk-17-jdk jq
-        # Baixar e configurar Android SDK
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        cd $HOME/android-sdk/cmdline-tools
-        wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
-        unzip cmdline-tools.zip
-        mkdir -p latest
-        mv cmdline-tools/* latest/
-        rm -rf cmdline-tools.zip
-        # Configurar variáveis de ambiente
-        echo "export ANDROID_SDK_ROOT=$HOME/android-sdk" >> $HOME/.bashrc
-        echo "export ANDROID_HOME=$HOME/android-sdk" >> $HOME/.bashrc
-        echo "export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $HOME/.bashrc
-        echo "export PATH=$HOME/android-sdk/platform-tools:$PATH" >> $HOME/.bashrc
-        source $HOME/.bashrc
-        # Instalar pacotes do SDK
-        yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
-        # Instalar Bubblewrap
-        npm install -g @bubblewrap/cli
-        mkdir -p ~/.bubblewrap
-        echo '{
-          "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
-          "androidSdkPath": "'$HOME'/android-sdk"
-        }' > ~/.bubblewrap/config.json
+        # Baixar e configurar a keystore
+        echo "$KEYSTORE" | base64 --decode > $HOME/android.keystore
+        chmod 600 $HOME/android.keystore
+        # Atualizar o Bubblewrap
+        npm install -g @bubblewrap/cli@latest
 
     - name: Configurar Keystore e Variáveis de Ambiente
       run: |
-        # Decodificar a keystore a partir da variável de ambiente KEYSTORE
-        echo "$KEYSTORE" | base64 --decode > $HOME/android.keystore
-        # Definir permissões adequadas para a keystore
-        chmod 600 $HOME/android.keystore
-      env:
-        KEYSTORE: ${{ secrets.KEYSTORE }}
+        # Definir variáveis de ambiente para a keystore
+        echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> $GITHUB_ENV
+        echo "KEY_ALIAS=$KEY_ALIAS" >> $GITHUB_ENV
+        echo "PACKAGE_NAME=com.francsilva.pwa" >> $GITHUB_ENV
+        echo "DOMAIN=francsilva.com.br" >> $GITHUB_ENV
+        echo "URL_PATH=/" >> $GITHUB_ENV
+        echo "VERSION_CODE=1" >> $GITHUB_ENV
+        echo "VERSION_NAME=1.0.0" >> $GITHUB_ENV
+        echo "MIN_SDK_VERSION=21" >> $GITHUB_ENV
 
-    - name: Atualizar o Bubblewrap
-      run: npm install -g @bubblewrap/cli@latest    
-
-    - name: Inicializar e construir o aplicativo
-      run: |       
-        sudo apt-get install -y expect
-        expect <<EOF
-        spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
-        expect "? Domain:"
-        send "francsilva.com.br\r"
-        expect "? URL path:"
-        send "/\r"
-        expect eof
-        EOF
-        cat twa-manifest.json || echo "Erro: twa-manifest.json não foi criado"
-        bubblewrap build
-      env:
-        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        PACKAGE_NAME: com.francsilva.pwa
-        DOMAIN: francsilva.com.br
-        URL_PATH: /
-        VERSION_CODE: 1
-        VERSION_NAME: 1.0.0
-        MIN_SDK_VERSION: 21
+    - name: Inicializar e construir o aplicativo usando Docker
+      run: |
+        docker run --rm -ti \
+          -e KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD \
+          -e KEY_ALIAS=$KEY_ALIAS \
+          -e PACKAGE_NAME=$PACKAGE_NAME \
+          -e DOMAIN=$DOMAIN \
+          -e URL_PATH=$URL_PATH \
+          -e VERSION_CODE=$VERSION_CODE \
+          -e VERSION_NAME=$VERSION_NAME \
+          -e MIN_SDK_VERSION=$MIN_SDK_VERSION \
+          -v $HOME:/workspace \
+          ghcr.io/googlechromelabs/bubblewrap:latest \
+          bash -c "
+            bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
+            --packageId $PACKAGE_NAME --host $DOMAIN --name 'Francisco Silva App' \
+            --launcherName 'FSilva HND' --no-interactive && \
+            bubblewrap build
+          "
