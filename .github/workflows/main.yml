@@ -28,10 +28,12 @@ jobs:
         meson setup _builddir
         meson compile -C _builddir
         sudo meson install -C _builddir
+        cd ..
+        sudo ln -s /usr/local/bin/bubblewrap /usr/bin/bubblewrap
+        bubblewrap --version  # Verificar a instalação
 
     - name: Gerar APK com Bubblewrap
       run: |
-        cd ..
         bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
         bubblewrap build
 
