@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Instalar dependências
+      - name: Instalar dependências e Android SDK
         run: |
           rm -rf .bubblewrap
           sudo apt-get update
@@ -50,31 +50,19 @@ jobs:
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
-          # Criar o arquivo de configuração do Bubblewrap
+      - name: Verificar Caminhos do Android SDK
+        run: |
+          echo "Valor de ANDROID_HOME: $ANDROID_HOME"
+          echo "Valor de ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
+          echo "Conteúdo do diretório SDK:"
+          ls -la $ANDROID_HOME || echo "Erro: Diretório do Android SDK não encontrado!"
+
+      - name: Atualizar Caminho do Android SDK no Bubblewrap
+        run: |
           mkdir -p ~/.bubblewrap
           echo '{ "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64", "androidSdkPath": "'"$ANDROID_HOME"'" }' > ~/.bubblewrap/config.json
-
-      - name: Verificar caminho do Android SDK
-        run: |
-          echo "ANDROID_HOME está definido como: $ANDROID_HOME"
-          echo "Conteúdo do diretório do Android SDK:"
-          ls -la $ANDROID_HOME || echo "Erro: Diretório do Android SDK não encontrado!"
-          echo "Conteúdo do cmdline-tools/latest/bin:"
-          ls -la $ANDROID_HOME/cmdline-tools/latest/bin || echo "Erro: cmdline-tools/latest/bin não encontrado!"
-
-      - name: Testar sdkmanager e exibir diretório do SDK
-        run: |
-          export ANDROID_HOME=$HOME/android-sdk
-          export ANDROID_SDK_ROOT=$ANDROID_HOME
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
-          
-          echo "Versão do sdkmanager:"
-          sdkmanager --version || echo "Erro ao executar sdkmanager"
-
-      - name: Verificar configuração do Bubblewrap
-        run: |
-          echo "Conteúdo de ~/.bubblewrap/config.json:"
-          cat ~/.bubblewrap/config.json || echo "Erro: Arquivo de configuração do Bubblewrap não encontrado!"
+          echo "Novo conteúdo de ~/.bubblewrap/config.json:"
+          cat ~/.bubblewrap/config.json
 
       - name: Configurar Keystore e Variáveis de Ambiente
         run: |
@@ -83,15 +71,9 @@ jobs:
         env:
           KEYSTORE: ${{ secrets.KEYSTORE }}
 
-      - name: Atualizar o Bubblewrap
-        run: npm install -g @bubblewrap/cli@latest
-
-      - name: Testar Bubblewrap manualmente
+      - name: Instalar Bubblewrap e verificar configuração
         run: |
-          export ANDROID_HOME=$HOME/android-sdk
-          export ANDROID_SDK_ROOT=$ANDROID_HOME
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
-          
+          npm install -g @bubblewrap/cli@latest
           bubblewrap doctor || echo "Erro ao executar bubblewrap doctor"
 
       - name: Inicializar e construir o aplicativo
