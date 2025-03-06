@@ -8,74 +8,65 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Verificar código do repositório
-      uses: actions/checkout@v3
+      - name: Verificar código do repositório
+        uses: actions/checkout@v3
 
-    - name: Configurar Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: "22"
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
 
-    - name: Instalar dependências
-      run: |
-        rm -rf .bubblewrap
-        # Instalar JDK 17
-        sudo apt-get update
-        sudo apt-get install -y openjdk-17-jdk
-        sudo apt-get install -y jq # ler arquivos
-        # Instalar dependências do sistema
-        sudo apt-get install -y wget unzip
-        # Baixar e descompactar o Android SDK
-        wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
-        sudo unzip commandlinetools-linux-7583922_latest.zip -d /usr/lib/android-sdk/
-        sudo rm commandlinetools-linux-7583922_latest.zip
-        # Mover para o diretório correto
-        sudo mv /usr/lib/android-sdk/cmdline-tools /usr/lib/android-sdk/cmdline-tools/latest
-        # Aceitar as licenças e instalar componentes necessários
-        sudo yes | /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --update
-        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;30.0.3" "platforms;android-30"
-        # Configurar Bubblewrap
-        npm install -g @bubblewrap/cli
-        mkdir -p ~/.bubblewrap
-        echo '{
-          "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
-          "androidSdkPath": "/usr/lib/android-sdk"      
-        }' > ~/.bubblewrap/config.json
+      - name: Instalar dependências
+        run: |
+          rm -rf .bubblewrap
+          # Instalar JDK 17
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk
+          sudo apt-get install jq
+          #ler arquivos
+          # Instalar Android SDK
+          sudo apt-get install -y android-sdk
+          # Configurar Bubblewrap
+          npm install -g @bubblewrap/cli
+          mkdir -p ~/.bubblewrap
+          echo '{ "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64", "androidSdkPath": "/usr/lib/android-sdk" }' > ~/.bubblewrap/config.json
 
-    - name: Configurar Keystore e Variáveis de Ambiente
-      run: |
-        # Decodificar a keystore a partir da variável de ambiente KEYSTORE
-        echo "$KEYSTORE" | base64 --decode > $HOME/android.keystore
-        # Definir permissões adequadas para a keystore
-        chmod 600 $HOME/android.keystore
-      env:
-        KEYSTORE: ${{ secrets.KEYSTORE }}
+      - name: Adicionar sdkmanager ao PATH
+        run: |
+          export PATH=$PATH:/usr/lib/android-sdk/tools/bin
 
-    - name: Atualizar o Bubblewrap
-      run: npm install -g @bubblewrap/cli@latest    
+      - name: Configurar Keystore e Variáveis de Ambiente
+        run: |
+          # Decodificar a keystore a partir da variável de ambiente KEYSTORE
+          echo "$KEYSTORE" | base64 --decode > $HOME/android.keystore
+          # Definir permissões adequadas para a keystore
+          chmod 600 $HOME/android.keystore
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
 
-    - name: Inicializar e construir o aplicativo
-      run: |       
-        sudo apt-get install -y expect
-        expect <<EOF
-        spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
-        expect "? Domain:"
-        send "francsilva.com.br\r"
-        expect "? URL path:"
-        send "/\r"
-        expect eof
-        EOF
-        cat twa-manifest.json || echo "Erro: twa-manifest.json não foi criado"
-        bubblewrap build
-      env:
-        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        PACKAGE_NAME: com.francsilva.pwa
-        DOMAIN: francsilva.com.br
-        URL_PATH: /
-        VERSION_CODE: 1
-        VERSION_NAME: 1.0.0
-        MIN_SDK_VERSION: 21
+      - name: Atualizar o Bubblewrap
+        run: npm install -g @bubblewrap/cli@latest
+
+      - name: Inicializar e construir o aplicativo
+        run: |
+          sudo apt-get install -y expect
+          expect <<EOF
+          spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
+          expect "? Domain:"
+          send "francsilva.com.br\r"
+          expect "? URL path:"
+          send "/\r"
+          expect eof
+          EOF
+          cat twa-manifest.json || echo "Erro: twa-manifest.json não foi criado"
+          bubblewrap build
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          PACKAGE_NAME: com.francsilva.pwa
+          DOMAIN: francsilva.com.br
+          URL_PATH: /
+          VERSION_CODE: 1
+          VERSION_NAME: 1.0.0
+          MIN_SDK_VERSION: 21
