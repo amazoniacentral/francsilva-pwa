@@ -25,19 +25,26 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y openjdk-17-jdk
         sudo apt-get install jq #ler arquivos
-        # Instalar Android SDK
-        sudo apt-get install -y android-sdk
-        # Instalar sdkmanager
-        sudo apt-get install -y android-sdk-tools
-        # Configurar o SDK
-        yes | sdkmanager --licenses
-        sdkmanager "platform-tools" "build-tools;30.0.3" "platforms;android-30" # Exemplo de instalação do SDK
+        # Instalar dependências do Android SDK
+        sudo apt-get install -y wget unzip
+        mkdir -p $HOME/Android
+        cd $HOME/Android
+        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+        unzip commandlinetools-linux-9477386_latest.zip
+        rm commandlinetools-linux-9477386_latest.zip
+        # Definir variáveis de ambiente
+        echo "export ANDROID_HOME=$HOME/Android/cmdline-tools" >> ~/.bashrc
+        echo "export PATH=$ANDROID_HOME:$PATH" >> ~/.bashrc
+        source ~/.bashrc
+        # Aceitar as licenças e instalar o SDK
+        yes | $HOME/Android/cmdline-tools/bin/sdkmanager --licenses
+        $HOME/Android/cmdline-tools/bin/sdkmanager "platform-tools" "build-tools;30.0.3" "platforms;android-30" # Ajuste conforme necessário
         # Configurar Bubblewrap
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
         echo '{
           "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
-          "androidSdkPath": "/usr/lib/android-sdk"      
+          "androidSdkPath": "'$HOME'/Android"
         }' > ~/.bubblewrap/config.json
 
     - name: Configurar Keystore e Variáveis de Ambiente
