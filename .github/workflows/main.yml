@@ -20,6 +20,12 @@ jobs:
 
     - name: Instalar dependências
       run: |
+        # Instalar JDK 11
+        sudo apt-get update
+        sudo apt-get install -y openjdk-11-jdk
+        # Instalar Android SDK
+        sudo apt-get install -y android-sdk
+        # Configurar Bubblewrap
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
         echo '{
