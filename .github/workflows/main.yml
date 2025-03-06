@@ -16,7 +16,7 @@ jobs:
     - name: Configurar Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '22'  # Ajuste para uma versão LTS compatível com o Bubblewrap
+        node-version: '22' 
 
     - name: Instalar dependências
       run: |
@@ -32,8 +32,7 @@ jobs:
           "jdkPath": "/usr/lib/jvm/java-11-openjdk-amd64",
           "androidSdkPath": "/usr/lib/android-sdk",
           "domain": "francsilva.com.br",
-          "urlPath": "/",
-          "manifest": "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
+          "urlPath": "/"
         }' > ~/.bubblewrap/config.json
 
     - name: Inicializar e construir o aplicativo
