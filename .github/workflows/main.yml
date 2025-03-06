@@ -10,17 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v2
+    - name: Verificar código do repositório
+      uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Configurar Node.js
+      uses: actions/setup-node@v3
       with:
-        node-version: '14'
+        node-version: '16'
 
-    - name: Install dependencies
+    - name: Instalar dependências
       run: |
         npm install -g @bubblewrap/cli
+        mkdir -p ~/.bubblewrap
+        echo '{"jdkPath": "/usr/lib/jvm/java-11-openjdk-amd64", "androidSdkPath": "/usr/lib/android-sdk"}' > ~/.bubblewrap/config.json
         bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
         bubblewrap build
       env:
