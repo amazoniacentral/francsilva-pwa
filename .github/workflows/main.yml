@@ -24,6 +24,7 @@ jobs:
         # Instalar JDK 17
         sudo apt-get update
         sudo apt-get install -y openjdk-17-jdk
+        sudo apt-get install jq #ler arquivos
         # Instalar Android SDK
         sudo apt-get install -y android-sdk
         # Configurar Bubblewrap
@@ -52,7 +53,9 @@ jobs:
         # bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive || exit 0
         # curl -s https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json | bubblewrap init --manifest - --no-interactive
         bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
-        bubblewrap build
+        
+        cat twa-manifest.json
+        #bubblewrap build
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
