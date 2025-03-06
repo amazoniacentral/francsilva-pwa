@@ -18,27 +18,51 @@ jobs:
           sudo apt-get install -y expect
           npm install -g @bubblewrap/cli
 
-      - name: Inicializar o projeto com Bubblewrap e configurar JDK/SDK usando `extract`
+      - name: Inicializar o projeto com Bubblewrap e capturar perguntas
         run: |
           expect <<EOF
           spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
           
-          # Espera e imprime a pergunta do SDK
-          expect "? Do you want to install the Android SDK (Y/n):"
-          send_user "Pergunta: Do you want to install the Android SDK (Y/n):\r\n"
-          send "Y\r"
-          expect "? Do you want Bubblewrap to install the JDK (recommended)?"
-          send_user "Pergunta: Do you want Bubblewrap to install the JDK (recommended)?\r\n"
-          send "Y\r"
-          expect "? Do you want to install the default build tools (Y/n):"
-          send_user "Pergunta: Do you want to install the default build tools (Y/n):\r\n"
-          send "Y\r"
-          expect "? Domain:"
-          send_user "Pergunta: Domain:\r\n"
-          send "francsilva.com.br\r"
-          expect "? URL path:"
-          send_user "Pergunta: URL path:\r\n"
-          send "/\r"
+          # Captura e imprime qualquer pergunta que seja feita
+          expect {
+            "? Do you want to install the Android SDK (Y/n):" {
+              # Captura a pergunta original e imprime
+              exp_internal 1
+              expect_user "Pergunta original: Do you want to install the Android SDK (Y/n):\n"
+              send "Y\r"
+            }
+            "? Do you want Bubblewrap to install the JDK (recommended)?" {
+              # Captura a pergunta original e imprime
+              exp_internal 1
+              expect_user "Pergunta original: Do you want Bubblewrap to install the JDK (recommended)?\n"
+              send "Y\r"
+            }
+            "? Do you want to install the default build tools (Y/n):" {
+              # Captura a pergunta original e imprime
+              exp_internal 1
+              expect_user "Pergunta original: Do you want to install the default build tools (Y/n):\n"
+              send "Y\r"
+            }
+            "? Domain:" {
+              # Captura a pergunta original e imprime
+              exp_internal 1
+              expect_user "Pergunta original: Domain:\n"
+              send "francsilva.com.br\r"
+            }
+            "? URL path:" {
+              # Captura a pergunta original e imprime
+              exp_internal 1
+              expect_user "Pergunta original: URL path:\n"
+              send "/\r"
+            }
+            default {
+              # Captura qualquer outra pergunta desconhecida
+              exp_internal 1
+              expect_user "Pergunta desconhecida capturada: \n"
+              interact
+            }
+          }
+          
           expect eof
           EOF
 
