@@ -20,27 +20,32 @@ jobs:
       - name: Instalar dependências
         run: |
           rm -rf .bubblewrap
-          # Instalar JDK 17
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk
-          sudo apt-get install jq
-          #ler arquivos
-          # Instalar Android SDK
+          
+          # Instalar JDK 17
+          sudo apt-get install -y openjdk-17-jdk jq
+
+          # Instalar Android SDK e configurar PATH
           sudo apt-get install -y android-sdk
-          # Configurar Bubblewrap
+          echo 'export ANDROID_SDK_ROOT=/usr/lib/android-sdk' >> $HOME/.bashrc
+          echo 'export PATH=$PATH:/usr/lib/android-sdk/cmdline-tools/latest/bin:/usr/lib/android-sdk/platform-tools:/usr/lib/android-sdk/tools/bin' >> $HOME/.bashrc
+          source $HOME/.bashrc
+          
+          # Instalar Bubblewrap
           npm install -g @bubblewrap/cli
           mkdir -p ~/.bubblewrap
           echo '{ "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64", "androidSdkPath": "/usr/lib/android-sdk" }' > ~/.bubblewrap/config.json
 
       - name: Adicionar sdkmanager ao PATH
         run: |
-          export PATH=$PATH:/usr/lib/android-sdk/tools/bin
+          export ANDROID_SDK_ROOT=/usr/lib/android-sdk
+          export PATH=$PATH:/usr/lib/android-sdk/cmdline-tools/latest/bin:/usr/lib/android-sdk/platform-tools:/usr/lib/android-sdk/tools/bin
+          echo "sdkmanager versão:"
+          sdkmanager --version || echo "Erro ao executar sdkmanager"
 
       - name: Configurar Keystore e Variáveis de Ambiente
         run: |
-          # Decodificar a keystore a partir da variável de ambiente KEYSTORE
           echo "$KEYSTORE" | base64 --decode > $HOME/android.keystore
-          # Definir permissões adequadas para a keystore
           chmod 600 $HOME/android.keystore
         env:
           KEYSTORE: ${{ secrets.KEYSTORE }}
