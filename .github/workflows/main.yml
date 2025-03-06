@@ -28,8 +28,9 @@ jobs:
         # Remover SDK antigo e instalar cmdline-tools manualmente
         sudo apt-get remove -y android-sdk
         wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-        unzip cmdline-tools.zip -d /usr/lib/android-sdk
-        rm cmdline-tools.zip
+        sudo mkdir -p /usr/lib/android-sdk
+        sudo unzip cmdline-tools.zip -d /usr/lib/android-sdk
+        sudo rm cmdline-tools.zip
         # Configurar Bubblewrap
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
