@@ -22,8 +22,9 @@ jobs:
       - name: Baixar e instalar o JDK 17 openjdk no diretório padrão do Bubblewrap
         run: |
           mkdir -p ~/.bubblewrap/jdk
-          curl -L "https://download.java.net/java/GA/jdk17/0d7e1f88e3304d3f96f6d8d68e4b0726/35/GPL/openjdk-17_linux-x64_bin.tar.gz" | tar xz -C ~/.bubblewrap/jdk --strip-components=1
-     
+          curl -L "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.2%2B8/OpenJDK17U-jdk_x64_linux_hotspot_17.0.2_8.tar.gz" -o openjdk-17.tar.gz
+          tar -xzf openjdk-17.tar.gz -C ~/.bubblewrap/jdk --strip-components=1
+    
       
       # Etapa 4: Instalar o Android SDK e aceitar licenças
       - name: Instalar o Android SDK e aceitar licenças
