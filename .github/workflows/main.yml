@@ -46,16 +46,18 @@ jobs:
         cd $HOME/android-sdk/cmdline-tools
         wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
         unzip cmdline-tools.zip
-        mv cmdline-tools latest
+        mkdir -p latest
+        mv cmdline-tools/* latest/
+        rm -rf cmdline-tools.zip
         # Configurar variáveis de ambiente
         echo "export ANDROID_HOME=$HOME/android-sdk" >> $HOME/.bashrc
         echo "export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $HOME/.bashrc
+        echo "export PATH=$HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin:$PATH" >> $HOME/.bashrc
         echo "export PATH=$HOME/android-sdk/platform-tools:$PATH" >> $HOME/.bashrc
-        echo "export PATH=$HOME/android-sdk/tools/bin:$PATH" >> $HOME/.bashrc
         source $HOME/.bashrc
         # Instalar pacotes do SDK
-        yes | sdkmanager --licenses
-        sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
+        yes | $HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager --licenses
+        $HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
         # Instalar Bubblewrap
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
