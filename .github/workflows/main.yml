@@ -27,32 +27,18 @@ jobs:
           expect "? Do you want to install the Android SDK (Y/n):"
           send_user "Pergunta: Do you want to install the Android SDK (Y/n):\r\n"
           send "Y\r"
-          sleep 1  # Aguarda para garantir que o processo prossiga
-
-          # Espera e imprime a pergunta do JDK
           expect "? Do you want Bubblewrap to install the JDK (recommended)?"
           send_user "Pergunta: Do you want Bubblewrap to install the JDK (recommended)?\r\n"
           send "Y\r"
-          sleep 1  # Aguarda para garantir que o processo prossiga
-
-          # Espera e imprime a pergunta sobre os build tools
           expect "? Do you want to install the default build tools (Y/n):"
           send_user "Pergunta: Do you want to install the default build tools (Y/n):\r\n"
           send "Y\r"
-          sleep 1  # Aguarda para garantir que o processo prossiga
-
-          # Espera e imprime a pergunta do Domínio
           expect "? Domain:"
           send_user "Pergunta: Domain:\r\n"
           send "francsilva.com.br\r"
-          sleep 1  # Aguarda para garantir que o processo prossiga
-
-          # Espera e imprime a pergunta do URL Path
           expect "? URL path:"
           send_user "Pergunta: URL path:\r\n"
           send "/\r"
-          sleep 1  # Aguarda para garantir que o processo prossiga
-
           expect eof
           EOF
 
