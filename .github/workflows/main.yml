@@ -54,15 +54,19 @@ jobs:
         run: |
           echo "Valor de ANDROID_HOME: $ANDROID_HOME"
           echo "Valor de ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
-          echo "Conteúdo do diretório SDK:"
-          ls -la $ANDROID_HOME || echo "Erro: Diretório do Android SDK não encontrado!"
+          echo "Verificando conteúdo do SDK..."
+          ls -la $ANDROID_HOME || echo "Erro: ANDROID_HOME não encontrado!"
+          ls -la $ANDROID_HOME/build-tools || echo "Erro: Pasta build-tools não encontrada!"
 
-      - name: Atualizar Caminho do Android SDK no Bubblewrap
+      - name: Corrigir Caminho do Android SDK no Bubblewrap
         run: |
-          mkdir -p ~/.bubblewrap
-          echo '{ "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64", "androidSdkPath": "'"$ANDROID_HOME"'" }' > ~/.bubblewrap/config.json
-          echo "Novo conteúdo de ~/.bubblewrap/config.json:"
-          cat ~/.bubblewrap/config.json
+          if [ -d "$ANDROID_HOME/build-tools" ]; then
+            echo '{ "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64", "androidSdkPath": "'"$ANDROID_HOME"'" }' > ~/.bubblewrap/config.json
+            echo "Configuração do SDK no Bubblewrap atualizada com sucesso!"
+          else
+            echo "Erro: Pasta build-tools não encontrada no SDK!" >&2
+            exit 1
+          fi
 
       - name: Configurar Keystore e Variáveis de Ambiente
         run: |
@@ -75,6 +79,11 @@ jobs:
         run: |
           npm install -g @bubblewrap/cli@latest
           bubblewrap doctor || echo "Erro ao executar bubblewrap doctor"
+
+      - name: Atualizar Configuração do Bubblewrap
+        run: |
+          bubblewrap updateConfig --androidSdkPath $ANDROID_HOME
+          bubblewrap doctor
 
       - name: Inicializar e construir o aplicativo
         run: |
