@@ -12,8 +12,10 @@ jobs:
       - name: Verificar código do repositório
         uses: actions/checkout@v3
 
-      - name: Instalar o Bubblewrap
+      - name: Instalar dependências
         run: |
+          sudo apt-get update
+          sudo apt-get install -y expect
           npm install -g @bubblewrap/cli
 
       - name: Inicializar o projeto com Bubblewrap e configurar automaticamente JDK e SDK
