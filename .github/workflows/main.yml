@@ -13,6 +13,28 @@ jobs:
     - name: Verificar código do repositório
       uses: actions/checkout@v3
 
+    - name: Configurar Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: "22"
+
+    #- name: Instalar dependências
+    #  run: |
+    #    rm -rf .bubblewrap
+    #    # Instalar JDK 17
+    #    sudo apt-get update
+    #    sudo apt-get install -y openjdk-17-jdk
+    #    sudo apt-get install jq #ler arquivos
+    #    # Instalar Android SDK
+    #    sudo apt-get install -y android-sdk
+    #    # Configurar Bubblewrap
+    #    npm install -g @bubblewrap/cli
+    #    mkdir -p ~/.bubblewrap
+    #    echo '{
+    #      "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
+    #      "androidSdkPath": "/usr/lib/android-sdk"      
+    #    }' > ~/.bubblewrap/config.json
+
     - name: Instalar dependências
       run: |
         rm -rf .bubblewrap
@@ -43,7 +65,6 @@ jobs:
           "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
           "androidSdkPath": "'$HOME'/android-sdk"
         }' > ~/.bubblewrap/config.json
-
     - name: Configurar Keystore e Variáveis de Ambiente
       run: |
         # Decodificar a keystore a partir da variável de ambiente KEYSTORE
@@ -56,20 +77,25 @@ jobs:
     - name: Atualizar o Bubblewrap
       run: npm install -g @bubblewrap/cli@latest    
 
-    - name: Rodar Bubblewrap no contêiner
-      run: |
-        docker run --rm \
-          -e KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD \
-          -e KEY_ALIAS=$KEY_ALIAS \
-          -e PACKAGE_NAME=$PACKAGE_NAME \
-          -e DOMAIN=$DOMAIN \
-          -e URL_PATH=$URL_PATH \
-          -e VERSION_CODE=$VERSION_CODE \
-          -e VERSION_NAME=$VERSION_NAME \
-          -e MIN_SDK_VERSION=$MIN_SDK_VERSION \
-          -v $HOME:/workspace \
-          ghcr.io/googlechromelabs/bubblewrap:latest \
-          bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
-          --packageId $PACKAGE_NAME --host $DOMAIN --name 'Francisco Silva App' \
-          --launcherName 'FSilva HND' --no-interactive && \
-          bubblewrap build
+    - name: Inicializar e construir o aplicativo
+      run: |       
+        sudo apt-get install -y expect
+        expect <<EOF
+        spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
+        expect "? Domain:"
+        send "francsilva.com.br\r"
+        expect "? URL path:"
+        send "/\r"
+        expect eof
+        EOF
+        cat twa-manifest.json || echo "Erro: twa-manifest.json não foi criado"
+        bubblewrap build
+      env:
+        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        PACKAGE_NAME: com.francsilva.pwa
+        DOMAIN: francsilva.com.br
+        URL_PATH: /
+        VERSION_CODE: 1
+        VERSION_NAME: 1.0.0
+        MIN_SDK_VERSION: 21
