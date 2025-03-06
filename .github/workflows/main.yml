@@ -16,7 +16,7 @@ jobs:
     - name: Configurar Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'
+        node-version: '14'  # Ajuste para uma versão LTS compatível com o Bubblewrap
 
     - name: Instalar dependências
       run: |
@@ -29,7 +29,10 @@ jobs:
           "urlPath": "/",
           "manifest": "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
         }' > ~/.bubblewrap/config.json
-        bubblewrap init --no-interactive
+
+    - name: Inicializar e construir o aplicativo
+      run: |
+        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
         bubblewrap build
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
