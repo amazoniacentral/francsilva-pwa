@@ -1,78 +1,42 @@
-name: Build TWA APK
+name: Build APK with Bubblewrap
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main  # ou a branch que você deseja usar
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Etapa 1: Checkout do código
-      - name: Checkout do código
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # Etapa 2: Instalar dependências do sistema (somente se necessário)
-      - name: Instalar dependências do sistema
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+
+      - name: Install Bubblewrap
         run: |
           sudo apt update
-          sudo apt install curl -y
-          npm install -g @bubblewrap/cli
+          sudo apt install -y bubblewrap
 
-      # Etapa 3: Baixar e instalar o JDK 17 openjdk no diretório padrão do Bubblewrap
-      - name: Baixar e instalar o JDK 17 openjdk no diretório padrão do Bubblewrap
+      - name: Download Manifest
         run: |
-          mkdir -p ~/.bubblewrap/jdk
-          curl -L "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.2%2B8/OpenJDK17U-jdk_x64_linux_hotspot_17.0.2_8.tar.gz" -o openjdk-17.tar.gz
-          tar -xzf openjdk-17.tar.gz -C ~/.bubblewrap/jdk --strip-components=1
-    
-      
-      # Etapa 4: Instalar o Android SDK e aceitar licenças
-      - name: Instalar o Android SDK e aceitar licenças
+          curl -o manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
+
+      - name: Build APK
         run: |
-          # Cria o diretório do SDK caso não exista
-          mkdir -p ~/.bubblewrap/android-sdk
+          bubblewrap init --manifest=manifest.json
+          bubblewrap build --release
 
-          # Baixa e extrai os arquivos do SDK
-          curl -L "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -o sdk-tools.zip
-          unzip sdk-tools.zip -d ~/.bubblewrap/android-sdk/
-
-          # Verifica se já existe o diretório cmdline-tools e o renomeia
-          if [ -d "~/.bubblewrap/android-sdk/cmdline-tools" ]; then
-            mv ~/.bubblewrap/android-sdk/cmdline-tools ~/.bubblewrap/android-sdk/cmdline-tools-old
-          fi
-
-          # Renomeia o diretório extraído para garantir que ele seja o último
-          mv ~/.bubblewrap/android-sdk/cmdline-tools ~/.bubblewrap/android-sdk/cmdline-tools/latest
-
-          # Aceita as licenças
-          yes | ~/.bubblewrap/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-
-          # Instala as ferramentas necessárias
-          ~/.bubblewrap/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-
-      # Etapa 5: Baixar o manifesto
-      - name: Baixar manifesto
-        run: |
-          curl -o twa-manifest.json "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
-
-      # Etapa 6: Inicializar o Bubblewrap sem interações
-      - name: Inicializar Bubblewrap sem interações
-        run: |
-          bubblewrap init --manifest twa-manifest.json --skipInput
-
-      # Etapa 7: Criar Keystore a partir do segredo
-      - name: Criar Keystore a partir do segredo
-        run: |
-          echo "${{ secrets.KEYSTORE }}" | base64 --decode > my-release-key.keystore
-
-      # Etapa 8: Build do APK assinado
-      - name: Build APK assinado
-        run: |
-          bubblewrap build --signingKeyPath my-release-key.keystore --signingKeyAlias ${{ secrets.KEY_ALIAS }} --signingKeyPassword ${{ secrets.KEYSTORE_PASSWORD }}
-
-      # Etapa 9: Upload do APK assinado
-      - name: Upload do APK assinado
+      - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TWA-APK
-          path: app-release-signed.apk
+          name: app-release-apk
+          path: dist/*.apk
