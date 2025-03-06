@@ -62,7 +62,13 @@ jobs:
           java -version
           sdkmanager --version
           
-          yes | bubblewrap init --manifest "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json" --jdkPath $HOME/.bubblewrap/jdk --sdkPath $HOME/android-sdk --skipPwaValidation
+          # Executa o Bubblewrap e responde automaticamente às perguntas
+          yes | bubblewrap init --manifest "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json" \
+            --jdkPath "$HOME/.bubblewrap/jdk" \
+            --sdkPath "$HOME/android-sdk" \
+            --skipPwaValidation \
+            --useExisting \
+            --force
 
       - name: Build do APK
         run: yes | bubblewrap build
