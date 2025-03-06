@@ -13,32 +13,50 @@ jobs:
     - name: Verificar código do repositório
       uses: actions/checkout@v3
 
-    - name: Configurar Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: "22"
-
     - name: Instalar dependências
       run: |
-        # Baixar e configurar a keystore
-        echo "$KEYSTORE" | base64 --decode > $HOME/android.keystore
-        chmod 600 $HOME/android.keystore
-        # Atualizar o Bubblewrap
-        npm install -g @bubblewrap/cli@latest
+        rm -rf .bubblewrap
+        # Instalar JDK 17
+        sudo apt-get update
+        sudo apt-get install -y openjdk-17-jdk jq
+        # Baixar e configurar Android SDK
+        mkdir -p $HOME/android-sdk/cmdline-tools
+        cd $HOME/android-sdk/cmdline-tools
+        wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
+        unzip cmdline-tools.zip
+        mkdir -p latest
+        mv cmdline-tools/* latest/
+        rm -rf cmdline-tools.zip
+        # Configurar variáveis de ambiente
+        echo "export ANDROID_SDK_ROOT=$HOME/android-sdk" >> $HOME/.bashrc
+        echo "export ANDROID_HOME=$HOME/android-sdk" >> $HOME/.bashrc
+        echo "export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $HOME/.bashrc
+        echo "export PATH=$HOME/android-sdk/platform-tools:$PATH" >> $HOME/.bashrc
+        source $HOME/.bashrc
+        # Instalar pacotes do SDK
+        yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
+        # Instalar Bubblewrap
+        npm install -g @bubblewrap/cli
+        mkdir -p ~/.bubblewrap
+        echo '{
+          "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
+          "androidSdkPath": "'$HOME'/android-sdk"
+        }' > ~/.bubblewrap/config.json
 
     - name: Configurar Keystore e Variáveis de Ambiente
       run: |
-        # Definir variáveis de ambiente para a keystore
-        echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> $GITHUB_ENV
-        echo "KEY_ALIAS=$KEY_ALIAS" >> $GITHUB_ENV
-        echo "PACKAGE_NAME=com.francsilva.pwa" >> $GITHUB_ENV
-        echo "DOMAIN=francsilva.com.br" >> $GITHUB_ENV
-        echo "URL_PATH=/" >> $GITHUB_ENV
-        echo "VERSION_CODE=1" >> $GITHUB_ENV
-        echo "VERSION_NAME=1.0.0" >> $GITHUB_ENV
-        echo "MIN_SDK_VERSION=21" >> $GITHUB_ENV
+        # Decodificar a keystore a partir da variável de ambiente KEYSTORE
+        echo "$KEYSTORE" | base64 --decode > $HOME/android.keystore
+        # Definir permissões adequadas para a keystore
+        chmod 600 $HOME/android.keystore
+      env:
+        KEYSTORE: ${{ secrets.KEYSTORE }}
 
-    - name: Inicializar e construir o aplicativo usando Docker
+    - name: Atualizar o Bubblewrap
+      run: npm install -g @bubblewrap/cli@latest    
+
+    - name: Inicializar e construir o aplicativo com Docker
       run: |
         docker run --rm \
           -e KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD \
@@ -51,4 +69,4 @@ jobs:
           -e MIN_SDK_VERSION=$MIN_SDK_VERSION \
           -v $HOME:/workspace \
           ghcr.io/googlechromelabs/bubblewrap:latest \
-          /bin/sh -c "bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId $PACKAGE_NAME --host $DOMAIN --name 'Francisco Silva App' --launcherName 'FSilva HND' --no-interactive --url-path $URL_PATH && bubblewrap build"
+          bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId $PACKAGE_NAME --host $DOMAIN --name 'Francisco Silva App' --launcherName 'FSilva HND' --no-interactive --url-path $URL_PATH && bubblewrap build
