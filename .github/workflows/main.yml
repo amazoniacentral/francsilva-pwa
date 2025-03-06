@@ -23,26 +23,36 @@ jobs:
           expect <<EOF
           spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
           
-          # Resposta para o SDK primeiro
+          # Espera e imprime a pergunta do SDK
           expect "? Do you want to install the Android SDK (Y/n):"
+          send_user "Pergunta: Do you want to install the Android SDK (Y/n):\r\n"
           send "Y\r"
-          
-          # Resposta para o JDK
+          sleep 1  # Aguarda para garantir que o processo prossiga
+
+          # Espera e imprime a pergunta do JDK
           expect "? Do you want Bubblewrap to install the JDK (recommended)?"
+          send_user "Pergunta: Do you want Bubblewrap to install the JDK (recommended)?\r\n"
           send "Y\r"
-          
-          # Resposta para o Default
+          sleep 1  # Aguarda para garantir que o processo prossiga
+
+          # Espera e imprime a pergunta sobre os build tools
           expect "? Do you want to install the default build tools (Y/n):"
+          send_user "Pergunta: Do you want to install the default build tools (Y/n):\r\n"
           send "Y\r"
-          
-          # Resposta para o Domínio
+          sleep 1  # Aguarda para garantir que o processo prossiga
+
+          # Espera e imprime a pergunta do Domínio
           expect "? Domain:"
+          send_user "Pergunta: Domain:\r\n"
           send "francsilva.com.br\r"
-          
-          # Resposta para o URL Path
+          sleep 1  # Aguarda para garantir que o processo prossiga
+
+          # Espera e imprime a pergunta do URL Path
           expect "? URL path:"
+          send_user "Pergunta: URL path:\r\n"
           send "/\r"
-          
+          sleep 1  # Aguarda para garantir que o processo prossiga
+
           expect eof
           EOF
 
