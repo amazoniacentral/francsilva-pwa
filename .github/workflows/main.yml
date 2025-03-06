@@ -27,13 +27,15 @@ jobs:
         sudo apt-get install jq # ler arquivos
         # Instalar pacotes essenciais do SDK
         sudo apt-get install -y unzip wget
-        # Instalar Android SDK
+        # Baixar e extrair o Android SDK
         wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
         unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk
         rm commandlinetools-linux-8512546_latest.zip
         # Configurar ambiente do SDK
         export ANDROID_HOME=$HOME/android-sdk
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+        # Verificar se sdkmanager está no PATH
+        echo $PATH
         # Aceitar licenças do SDK
         yes | sdkmanager --licenses
         # Instalar plataformas e ferramentas do SDK
