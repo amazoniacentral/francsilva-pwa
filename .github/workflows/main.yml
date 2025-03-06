@@ -56,9 +56,9 @@ jobs:
     - name: Atualizar o Bubblewrap
       run: npm install -g @bubblewrap/cli@latest    
 
-    - name: Inicializar e construir o aplicativo com Docker
+    - name: Rodar Bubblewrap no contêiner
       run: |
-        docker run --rm \
+        docker run --rm -ti \
           -e KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD \
           -e KEY_ALIAS=$KEY_ALIAS \
           -e PACKAGE_NAME=$PACKAGE_NAME \
@@ -69,4 +69,7 @@ jobs:
           -e MIN_SDK_VERSION=$MIN_SDK_VERSION \
           -v $HOME:/workspace \
           ghcr.io/googlechromelabs/bubblewrap:latest \
-          bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId $PACKAGE_NAME --host $DOMAIN --name 'Francisco Silva App' --launcherName 'FSilva HND' --no-interactive --url-path $URL_PATH && bubblewrap build
+          bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
+          --packageId $PACKAGE_NAME --host $DOMAIN --name 'Francisco Silva App' \
+          --launcherName 'FSilva HND' --no-interactive && \
+          bubblewrap build
