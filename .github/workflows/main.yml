@@ -24,17 +24,19 @@ jobs:
         # Instalar JDK 17
         sudo apt-get update
         sudo apt-get install -y openjdk-17-jdk
-        sudo apt-get install jq #ler arquivos
-        # Instalar Android SDK
-        sudo apt-get install -y android-sdk
+        sudo apt-get install -y jq expect # Instalar jq e expect
+        # Instalar Android SDK Command-Line Tools
+        sudo mkdir -p /usr/lib/android-sdk
+        sudo curl -o sdk-tools-linux.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
+        sudo unzip sdk-tools-linux.zip -d /usr/lib/android-sdk
         # Configurar Bubblewrap
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
         echo '{
-          "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
-          "androidSdkPath": "/usr/lib/android-sdk"      
+          "sdkPath": "/usr/lib/android-sdk"
         }' > ~/.bubblewrap/config.json
-
+        # Aceitar licenças do SDK
+        yes | /usr/lib/android-sdk/tools/bin/sdkmanager --licenses
 
     - name: Configurar Keystore e Variáveis de Ambiente
       run: |
@@ -49,8 +51,7 @@ jobs:
       run: npm install -g @bubblewrap/cli@latest    
 
     - name: Inicializar e construir o aplicativo
-      run: |       
-        sudo apt-get install -y expect
+      run: |
         expect <<EOF
         spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
         expect "? Domain:"
@@ -70,4 +71,3 @@ jobs:
         VERSION_CODE: 1
         VERSION_NAME: 1.0.0
         MIN_SDK_VERSION: 21
-        
