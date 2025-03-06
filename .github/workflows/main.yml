@@ -3,9 +3,6 @@ name: Build APK with Bubblewrap
 on:
   push:
     branches:
-      - main  # ou a branch que você deseja usar
-  pull_request:
-    branches:
       - main
 
 jobs:
@@ -13,30 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checar código
+      uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
+    - name: Instalar dependências
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y meson build-essential ninja-build pkg-config python3
+        git clone https://github.com/containers/bubblewrap.git
+        cd bubblewrap
+        meson _builddir
+        meson compile -C _builddir
+        sudo meson install -C _builddir
 
-      - name: Install Bubblewrap
-        run: |
-          sudo apt update
-          sudo apt install -y bubblewrap
+    - name: Gerar APK com Bubblewrap
+      run: |
+        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
+        bubblewrap build
 
-      - name: Download Manifest
-        run: |
-          curl -o manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
-
-      - name: Build APK
-        run: |
-          bubblewrap init --manifest=manifest.json
-          bubblewrap build --release
-
-      - name: Upload APK as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-apk
-          path: dist/*.apk
+    - name: Fazer upload do APK como artefato
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release
+        path: app-release.apk
