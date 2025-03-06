@@ -50,7 +50,6 @@ jobs:
       run: |
         # Rodar bubblewrap init com o manifesto e verificar possíveis interações
         bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive || exit 0
-        # bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
         bubblewrap build
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
