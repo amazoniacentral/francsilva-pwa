@@ -25,18 +25,26 @@ jobs:
           # Instalar JDK 17
           sudo apt-get install -y openjdk-17-jdk jq unzip
 
-          # Definir o caminho do SDK
+          # Definir variáveis do Android SDK
           export ANDROID_HOME=$HOME/android-sdk
           export ANDROID_SDK_ROOT=$ANDROID_HOME
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
 
-          # Baixar e instalar o Android SDK
+          # Baixar e instalar Android SDK
           mkdir -p $ANDROID_HOME/cmdline-tools
           cd $ANDROID_HOME/cmdline-tools
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
           unzip -q cmdline-tools.zip
           mv cmdline-tools latest
           rm cmdline-tools.zip
+
+          # Verificar se o sdkmanager está instalado
+          if [ -f "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+            echo "sdkmanager instalado em: $ANDROID_HOME/cmdline-tools/latest/bin"
+          else
+            echo "Erro: sdkmanager não foi encontrado!" >&2
+            exit 1
+          fi
 
           # Instalar componentes do SDK
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
@@ -46,7 +54,7 @@ jobs:
           mkdir -p ~/.bubblewrap
           echo '{ "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64", "androidSdkPath": "'"$ANDROID_HOME"'" }' > ~/.bubblewrap/config.json
 
-      - name: Testar sdkmanager
+      - name: Testar sdkmanager e exibir diretório do SDK
         run: |
           export ANDROID_HOME=$HOME/android-sdk
           export ANDROID_SDK_ROOT=$ANDROID_HOME
@@ -54,6 +62,11 @@ jobs:
           
           echo "Versão do sdkmanager:"
           sdkmanager --version || echo "Erro ao executar sdkmanager"
+
+          echo "Diretório do Android SDK:"
+          echo $ANDROID_HOME
+          ls -la $ANDROID_HOME
+          ls -la $ANDROID_HOME/cmdline-tools/latest/bin
 
       - name: Configurar Keystore e Variáveis de Ambiente
         run: |
