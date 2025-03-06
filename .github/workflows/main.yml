@@ -29,11 +29,22 @@ jobs:
       # Etapa 4: Instalar o Android SDK e aceitar licenças
       - name: Instalar o Android SDK e aceitar licenças
         run: |
+          # Cria o diretório do SDK caso não exista
           mkdir -p ~/.bubblewrap/android-sdk
+
+          # Baixa e extrai os arquivos do SDK
           curl -L "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -o sdk-tools.zip
           unzip sdk-tools.zip -d ~/.bubblewrap/android-sdk/
+
+          # Renomeia o diretório extraído para garantir que ele seja o último
+          mv ~/.bubblewrap/android-sdk/cmdline-tools ~/.bubblewrap/android-sdk/cmdline-tools/latest
+
+          # Aceita as licenças
           yes | ~/.bubblewrap/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+
+          # Instala as ferramentas necessárias
           ~/.bubblewrap/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
 
       # Etapa 5: Baixar o manifesto
       - name: Baixar manifesto
