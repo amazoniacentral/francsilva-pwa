@@ -49,8 +49,9 @@ jobs:
     - name: Inicializar e construir o aplicativo
       run: |       
         # Rodar bubblewrap init com o manifesto e verificar possíveis interações
-        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive || exit 0
+        # bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive || exit 0
         # curl -s https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json | bubblewrap init --manifest - --no-interactive
+        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
         bubblewrap build
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
