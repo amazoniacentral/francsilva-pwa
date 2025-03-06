@@ -20,7 +20,7 @@ jobs:
         run: |
           # Baixar e instalar o JDK no diretório padrão do Bubblewrap
           mkdir -p ~/.bubblewrap/jdk
-          curl -L "https://download.java.net/java/ga/jdk17/openjdk-17_linux-x64_bin.tar.gz" | tar xz -C ~/.bubblewrap/jdk --strip-components=1
+          curl -L "https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz" | tar xz -C ~/.bubblewrap/jdk --strip-components=1
 
       - name: Instalar o Android SDK e aceitar licenças
         run: |
