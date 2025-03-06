@@ -22,14 +22,14 @@ jobs:
       run: |
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
-        echo '{"jdkPath": "/usr/lib/jvm/java-11-openjdk-amd64", "androidSdkPath": "/usr/lib/android-sdk"}' > ~/.bubblewrap/config.json
-        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
+        echo '{"jdkPath": "/usr/lib/jvm/java-11-openjdk-amd64", "androidSdkPath": "/usr/lib/android-sdk", "domain": "francsilva.com.br", "urlPath": "/"}' > ~/.bubblewrap/config.json
+        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --domain francsilva.com.br --urlPath /
         bubblewrap build
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        PACKAGE_NAME: com.seu.pwa
+        PACKAGE_NAME: com.francsilva.pwa
         VERSION_CODE: 1
         VERSION_NAME: 1.0.0
         MIN_SDK_VERSION: 21
