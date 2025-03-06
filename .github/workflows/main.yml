@@ -23,7 +23,7 @@ jobs:
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
         echo '{"jdkPath": "/usr/lib/jvm/java-11-openjdk-amd64", "androidSdkPath": "/usr/lib/android-sdk", "domain": "francsilva.com.br", "urlPath": "/"}' > ~/.bubblewrap/config.json
-        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --domain francsilva.com.br --urlPath /
+        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --domain francsilva.com.br --urlPath / --no-interactive
         bubblewrap build
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
