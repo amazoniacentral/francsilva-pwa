@@ -27,14 +27,17 @@ jobs:
         sudo apt-get install jq #ler arquivos
         # Instalar dependências do Android SDK
         sudo apt-get install -y wget unzip
-        mkdir -p $HOME/Android
+        mkdir -p $HOME/Android/cmdline-tools
         cd $HOME/Android
         wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-        unzip commandlinetools-linux-9477386_latest.zip
+        unzip commandlinetools-linux-9477386_latest.zip -d $HOME/Android/cmdline-tools
         rm commandlinetools-linux-9477386_latest.zip
+        # Mover a pasta para o local correto
+        mv $HOME/Android/cmdline-tools/cmdline-tools/* $HOME/Android/cmdline-tools/
+        rm -rf $HOME/Android/cmdline-tools/cmdline-tools
         # Definir variáveis de ambiente
-        echo "export ANDROID_HOME=$HOME/Android/cmdline-tools" >> ~/.bashrc
-        echo "export PATH=$ANDROID_HOME:$PATH" >> ~/.bashrc
+        echo "export ANDROID_HOME=$HOME/Android" >> ~/.bashrc
+        echo "export PATH=$ANDROID_HOME/cmdline-tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools:$PATH" >> ~/.bashrc
         source ~/.bashrc
         # Aceitar as licenças e instalar o SDK
         yes | $HOME/Android/cmdline-tools/bin/sdkmanager --licenses
