@@ -58,8 +58,10 @@ jobs:
           ls -la $ANDROID_HOME || echo "Erro: ANDROID_HOME não encontrado!"
           ls -la $ANDROID_HOME/build-tools || echo "Erro: Pasta build-tools não encontrada!"
 
-      - name: Corrigir Caminho do Android SDK no Bubblewrap
+      - name: Criar Configuração do SDK no Bubblewrap
         run: |
+          # Garantir que a pasta .bubblewrap exista
+          mkdir -p ~/.bubblewrap
           if [ -d "$ANDROID_HOME/build-tools" ]; then
             echo '{ "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64", "androidSdkPath": "'"$ANDROID_HOME"'" }' > ~/.bubblewrap/config.json
             echo "Configuração do SDK no Bubblewrap atualizada com sucesso!"
