@@ -12,63 +12,32 @@ jobs:
       - name: Verificar código do repositório
         uses: actions/checkout@v3
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "22"
-
-      - name: Instalar dependências e Android SDK
+      - name: Instalar o Bubblewrap
         run: |
-          rm -rf .bubblewrap
-          sudo apt-get update
+          npm install -g @bubblewrap/cli
 
-          # Instalar JDK 17
-          sudo apt-get install -y openjdk-17-jdk jq unzip
-
-          # Definir variáveis do Android SDK
-          export ANDROID_HOME=$HOME/android-sdk
-          export ANDROID_SDK_ROOT=$ANDROID_HOME
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
-
-          # Baixar e instalar Android SDK
-          mkdir -p $ANDROID_HOME/cmdline-tools
-          cd $ANDROID_HOME/cmdline-tools
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
-          unzip -q cmdline-tools.zip
-          mv cmdline-tools latest
-          rm cmdline-tools.zip
-
-          # Verificar se o sdkmanager está instalado
-          if [ -f "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
-            echo "sdkmanager instalado em: $ANDROID_HOME/cmdline-tools/latest/bin"
-          else
-            echo "Erro: sdkmanager não foi encontrado!" >&2
-            exit 1
-          fi
-
-          # Instalar componentes do SDK
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
-
-      - name: Verificar Caminhos do Android SDK
+      - name: Inicializar o projeto com Bubblewrap e configurar automaticamente JDK e SDK
         run: |
-          echo "Valor de ANDROID_HOME: $ANDROID_HOME"
-          echo "Valor de ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
-          echo "Verificando conteúdo do SDK..."
-          ls -la $ANDROID_HOME || echo "Erro: ANDROID_HOME não encontrado!"
-          ls -la $ANDROID_HOME/build-tools || echo "Erro: Pasta build-tools não encontrada!"
+          expect <<EOF
+          spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
+          expect "? Domain:"
+          send "francsilva.com.br\r"
+          expect "? URL path:"
+          send "/\r"
+          expect "? Do you want Bubblewrap to install the JDK and Android SDK? (Y/n):"
+          send "Y\r"
+          expect "? Do you want to install the JDK (Y/n):"
+          send "Y\r"
+          expect "? Do you want to install the Android SDK (Y/n):"
+          send "Y\r"
+          expect "? Do you want to install the default build tools (Y/n):"
+          send "Y\r"
+          expect eof
+          EOF
 
-      - name: Criar Configuração do SDK no Bubblewrap
+      - name: Verificar e instalar JDK e SDK pelo Bubblewrap
         run: |
-          # Garantir que a pasta .bubblewrap exista
-          mkdir -p ~/.bubblewrap
-          if [ -d "$ANDROID_HOME/build-tools" ]; then
-            echo '{ "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64", "androidSdkPath": "'"$ANDROID_HOME"'" }' > ~/.bubblewrap/config.json
-            echo "Configuração do SDK no Bubblewrap atualizada com sucesso!"
-          else
-            echo "Erro: Pasta build-tools não encontrada no SDK!" >&2
-            exit 1
-          fi
+          bubblewrap doctor
 
       - name: Configurar Keystore e Variáveis de Ambiente
         run: |
@@ -77,28 +46,8 @@ jobs:
         env:
           KEYSTORE: ${{ secrets.KEYSTORE }}
 
-      - name: Instalar Bubblewrap e verificar configuração
+      - name: Construir o APK com Bubblewrap
         run: |
-          npm install -g @bubblewrap/cli@latest
-          bubblewrap doctor || echo "Erro ao executar bubblewrap doctor"
-
-      - name: Atualizar Configuração do Bubblewrap
-        run: |
-          bubblewrap updateConfig --androidSdkPath $ANDROID_HOME
-          bubblewrap doctor
-
-      - name: Inicializar e construir o aplicativo
-        run: |
-          sudo apt-get install -y expect
-          expect <<EOF
-          spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
-          expect "? Domain:"
-          send "francsilva.com.br\r"
-          expect "? URL path:"
-          send "/\r"
-          expect eof
-          EOF
-          cat twa-manifest.json || echo "Erro: twa-manifest.json não foi criado"
           bubblewrap build
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
