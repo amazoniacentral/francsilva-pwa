@@ -40,7 +40,7 @@ jobs:
 
     - name: Inicializar e construir o aplicativo usando Docker
       run: |
-        docker run --rm -ti \
+        docker run --rm \
           -e KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD \
           -e KEY_ALIAS=$KEY_ALIAS \
           -e PACKAGE_NAME=$PACKAGE_NAME \
