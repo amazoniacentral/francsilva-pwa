@@ -62,11 +62,7 @@ jobs:
           java -version
           sdkmanager --version
 
-          echo -e "Yes\nYes\nbr.com.francsilva\ngvendas\n/home/runner/.android/app-signing-key.jks\n${{ secrets.KEY_ALIAS }}\n${{ secrets.KEYSTORE_PASSWORD }}\nYes\nYes" | bubblewrap init --manifest "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json" \
-            --jdkPath "$HOME/.bubblewrap/jdk" \
-            --sdkPath "$HOME/android-sdk" \
-            --skipPwaValidation \
-            --force
+          bubblewrap init --manifest "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
 
       - name: Build do APK
         run: yes | bubblewrap build
