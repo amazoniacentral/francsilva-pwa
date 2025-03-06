@@ -27,22 +27,22 @@ jobs:
         sudo apt-get install jq # ler arquivos
         # Instalar pacotes essenciais do SDK
         sudo apt-get install -y unzip wget
-        # Baixar e extrair o Android SDK
+        # Baixar e extrair a versão correta do Android SDK
         wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
         unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk
         rm commandlinetools-linux-8512546_latest.zip
-        # Configurar ambiente do SDK
+        # Configurar o diretório correto
+        mv $HOME/android-sdk/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+        # Atualizar variáveis de ambiente
         export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
-        # Verificar o conteúdo de PATH
-        echo $PATH
-        # Configurar as permissões do SDK
-        chmod +x $ANDROID_HOME/cmdline-tools/latest/bin/*
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+        # Garantir que o sdkmanager funcione
+        sdkmanager --version
         # Aceitar licenças do SDK
         yes | sdkmanager --licenses
-        # Instalar plataformas e ferramentas do SDK
-        sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.3" "tools"
-        # Configurar Bubblewrap
+        # Instalar plataformas e ferramentas necessárias
+        sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.3"
+        # Instalar Bubblewrap
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
         echo '{
