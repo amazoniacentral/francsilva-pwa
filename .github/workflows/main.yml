@@ -1,9 +1,6 @@
 name: Build TWA APK
 
-on:
-  push:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
   build:
@@ -11,64 +8,38 @@ jobs:
 
     steps:
       - name: Checkout do código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Instalar dependências
+      - name: Instalar dependências do sistema
         run: |
           sudo apt update
-          sudo apt install -y curl unzip git wget python3 python3-pip npm
+          sudo apt install openjdk-17-jdk -y
+          npm install -g @bubblewrap/cli
 
-      - name: Instalar JDK e Android SDK
+      - name: Instalar Bubblewrap e aceitar licenças
         run: |
-          # Criar diretório para o JDK
-          mkdir -p $HOME/.bubblewrap/jdk
-          cd $HOME/.bubblewrap/jdk
-          
-          # Baixar uma versão fixa do JDK 17
-          wget https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.11%2B9/OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz
-          tar -xvf OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz --strip-components=1
-          rm OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz
-          
-          # Criar diretório para o Android SDK
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          cd $HOME/android-sdk/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip
-          unzip commandlinetools-linux-*.zip
-          rm commandlinetools-linux-*.zip
-          mv cmdline-tools latest
+          bubblewrap doctor --install
+          yes | ~/.bubblewrap/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          ~/.bubblewrap/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Configurar variáveis de ambiente
+      - name: Baixar manifesto
         run: |
-          echo "JAVA_HOME=$HOME/.bubblewrap/jdk" >> $GITHUB_ENV
-          echo "BUBBLEWRAP_JDK_PATH=$HOME/.bubblewrap/jdk" >> $GITHUB_ENV
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "PATH=$HOME/.bubblewrap/jdk/bin:$HOME/android-sdk/cmdline-tools/bin:$HOME/android-sdk/platform-tools:$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/emulator:$PATH" >> $GITHUB_ENV
+          curl -o twa-manifest.json "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
 
-      - name: Aceitar licenças e instalar Build Tools
+      - name: Inicializar Bubblewrap sem interações
         run: |
-          yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          bubblewrap init --manifest twa-manifest.json --skipInput
 
-      - name: Instalar Bubblewrap
-        run: npm install -g @bubblewrap/cli
-
-      - name: Inicializar o Bubblewrap com respostas automáticas
+      - name: Criar Keystore a partir do segredo
         run: |
-          mkdir -p $HOME/.android
-          echo "${{ secrets.KEYSTORE }}" | base64 --decode > $HOME/.android/app-signing-key.jks    
-          echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
-          echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > my-release-key.keystore
 
-          java -version
-          sdkmanager --version
+      - name: Build APK assinado
+        run: |
+          bubblewrap build --signingKeyPath my-release-key.keystore --signingKeyAlias ${{ secrets.KEY_ALIAS }} --signingKeyPassword ${{ secrets.KEYSTORE_PASSWORD }}
 
-          bubblewrap init --manifest "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json"
-
-      - name: Build do APK
-        run: yes | bubblewrap build
-
-      - name: Upload do APK como artefato
+      - name: Upload do APK assinado
         uses: actions/upload-artifact@v4
         with:
-          name: APK-Gerado
+          name: TWA-APK
           path: app-release-signed.apk
