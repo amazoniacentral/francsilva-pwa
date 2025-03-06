@@ -31,8 +31,8 @@ jobs:
         echo '{
           "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
           "androidSdkPath": "/usr/lib/android-sdk",
-          "domain": "francsilva.com.br",
-          "urlPath": "/"
+          "domain": "https://francsilva.com.br",
+          "urlPath": "https://francsilva.com.br/"
         }' > ~/.bubblewrap/config.json
 
     - name: Configurar Keystore e Variáveis de Ambiente
@@ -50,7 +50,7 @@ jobs:
     - name: Inicializar e construir o aplicativo
       run: |
         # Rodar bubblewrap init com o manifesto e verificar possíveis interações
-        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --domain francsilva.com.br --urlPath / --no-interactive || exit 0
+        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive || exit 0
         bubblewrap build
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
