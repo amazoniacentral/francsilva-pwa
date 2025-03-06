@@ -23,31 +23,18 @@ jobs:
         rm -rf .bubblewrap
         # Instalar JDK 17
         sudo apt-get update
-        sudo apt-get install -y openjdk-17-jdk jq
-        # Baixar e configurar Android SDK
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        cd $HOME/android-sdk/cmdline-tools
-        wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
-        unzip cmdline-tools.zip
-        mkdir -p latest
-        mv cmdline-tools/* latest/
-        rm -rf cmdline-tools.zip
-        # Configurar variáveis de ambiente
-        echo "export ANDROID_SDK_ROOT=$HOME/android-sdk" >> $HOME/.bashrc
-        echo "export ANDROID_HOME=$HOME/android-sdk" >> $HOME/.bashrc
-        echo "export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $HOME/.bashrc
-        echo "export PATH=$HOME/android-sdk/platform-tools:$PATH" >> $HOME/.bashrc
-        source $HOME/.bashrc
-        # Instalar pacotes do SDK
-        yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
-        # Instalar Bubblewrap
+        sudo apt-get install -y openjdk-17-jdk
+        sudo apt-get install jq #ler arquivos
+        # Instalar Android SDK
+        sudo apt-get install -y android-sdk
+        # Configurar Bubblewrap
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
         echo '{
           "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
-          "androidSdkPath": "'$HOME'/android-sdk"
+          "androidSdkPath": "/usr/lib/android-sdk"      
         }' > ~/.bubblewrap/config.json
+
 
     - name: Configurar Keystore e Variáveis de Ambiente
       run: |
@@ -83,3 +70,4 @@ jobs:
         VERSION_CODE: 1
         VERSION_NAME: 1.0.0
         MIN_SDK_VERSION: 21
+        
