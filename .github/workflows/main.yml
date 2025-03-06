@@ -24,9 +24,16 @@ jobs:
         # Instalar JDK 17
         sudo apt-get update
         sudo apt-get install -y openjdk-17-jdk
-        sudo apt-get install jq #ler arquivos
-        # Instalar Android SDK
-        sudo apt-get install -y android-sdk
+        sudo apt-get install -y jq # ler arquivos
+        # Instalar dependências do sistema
+        sudo apt-get install -y wget unzip
+        # Instalar Android SDK e ferramentas
+        wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+        sudo unzip commandlinetools-linux-7583922_latest.zip -d /usr/lib/android-sdk/
+        sudo rm commandlinetools-linux-7583922_latest.zip
+        sudo yes | /usr/lib/android-sdk/cmdline-tools/bin/sdkmanager --licenses
+        sudo /usr/lib/android-sdk/cmdline-tools/bin/sdkmanager --update
+        sudo /usr/lib/android-sdk/cmdline-tools/bin/sdkmanager "platform-tools" "build-tools;30.0.3" "platforms;android-30"
         # Configurar Bubblewrap
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
@@ -34,8 +41,6 @@ jobs:
           "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
           "androidSdkPath": "/usr/lib/android-sdk"      
         }' > ~/.bubblewrap/config.json
-
-
 
     - name: Configurar Keystore e Variáveis de Ambiente
       run: |
