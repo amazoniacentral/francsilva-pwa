@@ -23,20 +23,25 @@ jobs:
           expect <<EOF
           spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
           
-          expect "? Domain:"
-          send "francsilva.com.br\r"
+          # Resposta para o SDK primeiro
+          expect "? Do you want to install the Android SDK (Y/n):"
+          send "Y\r"
           
-          expect "? URL path:"
-          send "/\r"
-          
+          # Resposta para o JDK
           expect "? Do you want Bubblewrap to install the JDK (recommended)?"
           send "Y\r"
           
-          expect "? Do you want Bubblewrap to install the Android SDK (Y/n):"
-          send "Y\r"
-          
+          # Resposta para o Default
           expect "? Do you want to install the default build tools (Y/n):"
           send "Y\r"
+          
+          # Resposta para o Domínio
+          expect "? Domain:"
+          send "francsilva.com.br\r"
+          
+          # Resposta para o URL Path
+          expect "? URL path:"
+          send "/\r"
           
           expect eof
           EOF
