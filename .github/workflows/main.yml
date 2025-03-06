@@ -34,8 +34,10 @@ jobs:
         # Configurar ambiente do SDK
         export ANDROID_HOME=$HOME/android-sdk
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
-        # Verificar se sdkmanager está no PATH
+        # Verificar o conteúdo de PATH
         echo $PATH
+        # Configurar as permissões do SDK
+        chmod +x $ANDROID_HOME/cmdline-tools/latest/bin/*
         # Aceitar licenças do SDK
         yes | sdkmanager --licenses
         # Instalar plataformas e ferramentas do SDK
