@@ -47,11 +47,10 @@ jobs:
       run: npm install -g @bubblewrap/cli@latest    
 
     - name: Inicializar e construir o aplicativo
-      run: |
-        curl -o manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
+      run: |       
         # Rodar bubblewrap init com o manifesto e verificar possíveis interações
         # bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive || exit 0
-        bubblewrap init --manifest file://$(pwd)/manifest.json --no-interactive
+        curl -s https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json | bubblewrap init --manifest - --no-interactive
         bubblewrap build
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
