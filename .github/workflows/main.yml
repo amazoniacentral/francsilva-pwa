@@ -52,22 +52,18 @@ jobs:
       - name: Instalar Bubblewrap
         run: npm install -g @bubblewrap/cli
 
-      - name: Inicializar o Bubblewrap diretamente com a URL
+      - name: Inicializar o Bubblewrap com respostas automáticas
         run: |
           mkdir -p $HOME/.android
           echo "${{ secrets.KEYSTORE }}" | base64 --decode > $HOME/.android/app-signing-key.jks    
           echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
           echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
-          
+
           java -version
           sdkmanager --version
-          
-          # Executa o Bubblewrap e responde automaticamente às perguntas
-          yes | bubblewrap init --manifest "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json" \
-            --jdkPath "$HOME/.bubblewrap/jdk" \
-            --sdkPath "$HOME/android-sdk" \
+
+          echo -e "Yes\nYes\nbr.com.francsilva\ngvendas\n/home/runner/.android/app-signing-key.jks\n${{ secrets.KEY_ALIAS }}\n${{ secrets.KEYSTORE_PASSWORD }}\nYes" | bubblewrap init --manifest "https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json" \
             --skipPwaValidation \
-            --useExisting \
             --force
 
       - name: Build do APK
