@@ -36,8 +36,13 @@ jobs:
           curl -L "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -o sdk-tools.zip
           unzip sdk-tools.zip -d ~/.bubblewrap/android-sdk/
 
+          # Verifica se o diretório "cmdline-tools" já existe e renomeia corretamente
+          if [ -d "~/.bubblewrap/android-sdk/cmdline-tools" ]; then
+            mv ~/.bubblewrap/android-sdk/cmdline-tools ~/.bubblewrap/android-sdk/cmdline-tools-old
+          fi
+
           # Renomeia o diretório extraído para garantir que ele seja o último
-          mv ~/.bubblewrap/android-sdk/cmdline-tools ~/.bubblewrap/android-sdk/cmdline-tools/latest
+          mv ~/.bubblewrap/android-sdk/cmdline-tools-old ~/.bubblewrap/android-sdk/cmdline-tools/latest
 
           # Aceita as licenças
           yes | ~/.bubblewrap/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
