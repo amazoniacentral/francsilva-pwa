@@ -48,10 +48,10 @@ jobs:
 
     - name: Inicializar e construir o aplicativo
       run: |
-        curl -o manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
+        curl -o ~/.bubblewrap/manifest.json https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
         # Rodar bubblewrap init com o manifesto e verificar possíveis interações
         # bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive || exit 0
-        bubblewrap init --manifest ./manifest.json --no-interactive
+        bubblewrap init --manifest ~/.bubblewrap/manifest.json --no-interactive
         bubblewrap build
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
