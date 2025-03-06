@@ -50,6 +50,7 @@ jobs:
         mv cmdline-tools/* latest/
         rm -rf cmdline-tools.zip
         # Configurar variáveis de ambiente
+        echo "export ANDROID_SDK_ROOT=$HOME/android-sdk" >> $HOME/.bashrc
         echo "export ANDROID_HOME=$HOME/android-sdk" >> $HOME/.bashrc
         echo "export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $HOME/.bashrc
         echo "export PATH=$HOME/android-sdk/platform-tools:$PATH" >> $HOME/.bashrc
@@ -62,7 +63,7 @@ jobs:
         mkdir -p ~/.bubblewrap
         echo '{
           "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
-          "androidSdkPath": "'$HOME'/android-sdk"      
+          "androidSdkPath": "'$HOME'/android-sdk"
         }' > ~/.bubblewrap/config.json
 
     - name: Configurar Keystore e Variáveis de Ambiente
