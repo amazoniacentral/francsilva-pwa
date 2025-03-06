@@ -51,9 +51,7 @@ jobs:
           -e MIN_SDK_VERSION=$MIN_SDK_VERSION \
           -v $HOME:/workspace \
           ghcr.io/googlechromelabs/bubblewrap:latest \
-          bash -c "
-            bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
-            --packageId $PACKAGE_NAME --host $DOMAIN --name 'Francisco Silva App' \
-            --launcherName 'FSilva HND' --no-interactive && \
-            bubblewrap build
-          "
+          bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
+          --packageId $PACKAGE_NAME --host $DOMAIN --name 'Francisco Silva App' \
+          --launcherName 'FSilva HND' --no-interactive --url-path $URL_PATH && \
+          bubblewrap build
