@@ -49,13 +49,15 @@ jobs:
 
     - name: Inicializar e construir o aplicativo
       run: |       
-        # Rodar bubblewrap init com o manifesto e verificar possíveis interações
-        # bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive || exit 0
-        # curl -s https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json | bubblewrap init --manifest - --no-interactive
-        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
-        
+        sudo apt-get install -y expect
+        expect -c "
+        spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name \"Francisco Silva App\" --launcherName \"FSilva HND\" --no-interactive
+        expect \"? Domain:\"
+        send \"francsilva.com.br\r\"
+        expect eof
+        "
         cat twa-manifest.json
-        #bubblewrap build
+        bubblewrap build
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
