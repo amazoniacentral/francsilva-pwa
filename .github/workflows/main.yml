@@ -25,32 +25,33 @@ jobs:
           # Instalar JDK 17
           sudo apt-get install -y openjdk-17-jdk jq unzip
 
-          # Instalar Android SDK manualmente
-          export ANDROID_SDK_ROOT=$HOME/android-sdk
-          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
-          cd $ANDROID_SDK_ROOT/cmdline-tools
+          # Definir o caminho do SDK
+          export ANDROID_HOME=$HOME/android-sdk
+          export ANDROID_SDK_ROOT=$ANDROID_HOME
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
+
+          # Baixar e instalar o Android SDK
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          cd $ANDROID_HOME/cmdline-tools
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
           unzip -q cmdline-tools.zip
           mv cmdline-tools latest
           rm cmdline-tools.zip
 
-          # Configurar PATH corretamente
-          echo "export ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $HOME/.bashrc
-          echo "export PATH=\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:\$ANDROID_SDK_ROOT/platform-tools:\$ANDROID_SDK_ROOT/emulator:\$PATH" >> $HOME/.bashrc
-          source $HOME/.bashrc
-
           # Instalar componentes do SDK
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
-          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
-          # Instalar Bubblewrap
-          npm install -g @bubblewrap/cli
+          # Criar o arquivo de configuração do Bubblewrap
           mkdir -p ~/.bubblewrap
-          echo "{ \"jdkPath\": \"/usr/lib/jvm/java-17-openjdk-amd64\", \"androidSdkPath\": \"$ANDROID_SDK_ROOT\" }" > ~/.bubblewrap/config.json
+          echo '{ "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64", "androidSdkPath": "'"$ANDROID_HOME"'" }' > ~/.bubblewrap/config.json
 
       - name: Testar sdkmanager
         run: |
-          source $HOME/.bashrc
+          export ANDROID_HOME=$HOME/android-sdk
+          export ANDROID_SDK_ROOT=$ANDROID_HOME
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
+          
           echo "Versão do sdkmanager:"
           sdkmanager --version || echo "Erro ao executar sdkmanager"
 
