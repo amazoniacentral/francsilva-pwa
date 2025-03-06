@@ -16,7 +16,7 @@ jobs:
     - name: Configurar Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '14'  # Ajuste para uma versão LTS compatível com o Bubblewrap
+        node-version: '22'  # Ajuste para uma versão LTS compatível com o Bubblewrap
 
     - name: Instalar dependências
       run: |
