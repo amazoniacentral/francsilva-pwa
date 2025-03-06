@@ -54,6 +54,8 @@ jobs:
         spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name \"Francisco Silva App\" --launcherName \"FSilva HND\" --no-interactive
         expect \"? Domain:\"
         send \"francsilva.com.br\r\"
+        expect \"? URL path:\"
+        send \"/\r\"
         expect eof
         "
         cat twa-manifest.json
