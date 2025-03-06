@@ -1,73 +1,56 @@
-name: Build and Sign Android App with Bubblewrap
-
+name: Build e Assinar APK
+ 
 on:
   push:
     branches:
       - main
-
+ 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-      PACKAGE_NAME: com.francsilva.pwa
-      VERSION_CODE: 1
-      VERSION_NAME: 1.0.0
-      MIN_SDK_VERSION: 21
-      DOMAIN: franscilva.com.br
-      URL_PATH: /
-
+ 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Configurar JDK 17
-        run: |
-          sudo apt update
-          sudo apt install -y openjdk-17-jdk
-          java -version
-
-      - name: Configurar SDK do Android
-        uses: android-actions/setup-android@v2
-
-      - name: Decode and save keystore
-        run: |
-          echo "$KEYSTORE" | base64 --decode > my-release-key.keystore
-        env:
-          KEYSTORE: ${{ secrets.KEYSTORE }}
-
-      - name: Instalar Node.js e Bubblewrap
-        run: |
-          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-          sudo apt install -y nodejs
-          sudo npm install -g @bubblewrap/cli
-
-      - name: Inicializar o projeto Bubblewrap
-        run: |
-          bubblewrap init \
-            --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
-            --package-name $PACKAGE_NAME \
-            --version-code $VERSION_CODE \
-            --version-name $VERSION_NAME \
-            --min-sdk-version $MIN_SDK_VERSION \
-            --domain $DOMAIN \
-            --url-path $URL_PATH \
-            --no-interactive
-
-      - name: Build do projeto
-        run: bubblewrap build
-
-      - name: Assinar o APK
-        run: |
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-            -keystore my-release-key.keystore \
-            -storepass $KEYSTORE_PASSWORD \
-            -keypass $KEYSTORE_PASSWORD \
-            app/build/outputs/bundle/release/app-release.aab $KEY_ALIAS
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-
-      - name: Limpeza
-        run: rm -f my-release-key.keystore
+    - name: Verificar código do repositório
+      uses: actions/checkout@v3
+ 
+    - name: Configurar Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22'
+ 
+    - name: Instalar dependências
+      run: |
+        # Instalar JDK 17
+        sudo apt-get update
+        sudo apt-get install -y openjdk-17-jdk
+        # Instalar Android SDK
+        sudo apt-get install -y android-sdk
+        # Configurar Bubblewrap
+        npm install -g @bubblewrap/cli
+        mkdir -p ~/.bubblewrap
+        echo '{
+          "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
+          "androidSdkPath": "/usr/lib/android-sdk",
+          "domain": "francsilva.com.br",
+          "urlPath": "/"
+        }' > ~/.bubblewrap/config.json
+    - name: Configurar Keystore e Variáveis de Ambiente
+      run: |
+        # Decodificar a keystore a partir da variável de ambiente KEYSTORE
+        echo "$KEYSTORE" | base64 --decode > $HOME/android.keystore
+        # Definir permissões adequadas para a keystore
+        chmod 600 $HOME/android.keystore
+      env:
+        KEYSTORE: ${{ secrets.KEYSTORE }}
+ 
+    - name: Inicializar e construir o aplicativo
+      run: |
+        bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
+        bubblewrap build
+      env:
+        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        PACKAGE_NAME: com.francsilva.pwa
+        VERSION_CODE: 1
+        VERSION_NAME: 1.0.0
+        MIN_SDK_VERSION: 21
