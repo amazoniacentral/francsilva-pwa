@@ -22,23 +22,14 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Set up JDK 17
+      - name: Configurar JDK 17
         run: |
           sudo apt update
           sudo apt install -y openjdk-17-jdk
           java -version
 
-      - name: Set up Android SDK
-        run: |
-          sudo apt update
-          sudo apt install -y wget unzip
-          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
-          unzip commandlinetools-linux-7583922_latest.zip -d $HOME/android-sdk
-          echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
-          yes | sdkmanager --licenses
-          sdkmanager "platforms;android-30" "build-tools;30.0.3"
-          android list targets
+      - name: Configurar SDK do Android
+        uses: android-actions/setup-android@v2
 
       - name: Decode and save keystore
         run: |
@@ -46,13 +37,13 @@ jobs:
         env:
           KEYSTORE: ${{ secrets.KEYSTORE }}
 
-      - name: Install Node.js and Bubblewrap
+      - name: Instalar Node.js e Bubblewrap
         run: |
           curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
           sudo apt install -y nodejs
           sudo npm install -g @bubblewrap/cli
 
-      - name: Initialize Bubblewrap project
+      - name: Inicializar o projeto Bubblewrap
         run: |
           bubblewrap init \
             --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json \
@@ -64,10 +55,10 @@ jobs:
             --url-path $URL_PATH \
             --no-interactive
 
-      - name: Build the project
+      - name: Build do projeto
         run: bubblewrap build
 
-      - name: Sign the APK
+      - name: Assinar o APK
         run: |
           jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
             -keystore my-release-key.keystore \
@@ -78,5 +69,5 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
 
-      - name: Clean up
+      - name: Limpeza
         run: rm -f my-release-key.keystore
