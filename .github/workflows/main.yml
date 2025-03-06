@@ -21,26 +21,37 @@ jobs:
         run: |
           rm -rf .bubblewrap
           sudo apt-get update
-          
-          # Instalar JDK 17
-          sudo apt-get install -y openjdk-17-jdk jq
 
-          # Instalar Android SDK e configurar PATH
-          sudo apt-get install -y android-sdk
-          echo 'export ANDROID_SDK_ROOT=/usr/lib/android-sdk' >> $HOME/.bashrc
-          echo 'export PATH=$PATH:/usr/lib/android-sdk/cmdline-tools/latest/bin:/usr/lib/android-sdk/platform-tools:/usr/lib/android-sdk/tools/bin' >> $HOME/.bashrc
+          # Instalar JDK 17
+          sudo apt-get install -y openjdk-17-jdk jq unzip
+
+          # Instalar Android SDK manualmente
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+          cd $ANDROID_SDK_ROOT/cmdline-tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
+          unzip -q cmdline-tools.zip
+          mv cmdline-tools latest
+          rm cmdline-tools.zip
+
+          # Configurar PATH corretamente
+          echo "export ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $HOME/.bashrc
+          echo "export PATH=\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:\$ANDROID_SDK_ROOT/platform-tools:\$ANDROID_SDK_ROOT/emulator:\$PATH" >> $HOME/.bashrc
           source $HOME/.bashrc
-          
+
+          # Instalar componentes do SDK
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+
           # Instalar Bubblewrap
           npm install -g @bubblewrap/cli
           mkdir -p ~/.bubblewrap
-          echo '{ "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64", "androidSdkPath": "/usr/lib/android-sdk" }' > ~/.bubblewrap/config.json
+          echo "{ \"jdkPath\": \"/usr/lib/jvm/java-17-openjdk-amd64\", \"androidSdkPath\": \"$ANDROID_SDK_ROOT\" }" > ~/.bubblewrap/config.json
 
-      - name: Adicionar sdkmanager ao PATH
+      - name: Testar sdkmanager
         run: |
-          export ANDROID_SDK_ROOT=/usr/lib/android-sdk
-          export PATH=$PATH:/usr/lib/android-sdk/cmdline-tools/latest/bin:/usr/lib/android-sdk/platform-tools:/usr/lib/android-sdk/tools/bin
-          echo "sdkmanager versão:"
+          source $HOME/.bashrc
+          echo "Versão do sdkmanager:"
           sdkmanager --version || echo "Erro ao executar sdkmanager"
 
       - name: Configurar Keystore e Variáveis de Ambiente
