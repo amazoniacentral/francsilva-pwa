@@ -1,4 +1,4 @@
-name: Build APK with Bubblewrap
+name: Build APK
 
 on:
   push:
@@ -10,35 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checar código
-      uses: actions/checkout@v4
+    - name: Check out repository
+      uses: actions/checkout@v2
 
-    - name: Instalar dependências
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          build-essential \
-          ninja-build \
-          meson \
-          pkg-config \
-          python3 \
-          libcap-dev
-        git clone https://github.com/containers/bubblewrap.git
-        cd bubblewrap
-        meson setup _builddir
-        meson compile -C _builddir
-        sudo meson install -C _builddir
-        cd ..
-        sudo ln -s /usr/local/bin/bubblewrap /usr/bin/bubblewrap
-        bubblewrap --version  # Verificar a instalação
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
 
-    - name: Gerar APK com Bubblewrap
+    - name: Install dependencies
       run: |
+        npm install -g @bubblewrap/cli
         bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
         bubblewrap build
-
-    - name: Fazer upload do APK como artefato
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-release
-        path: path/to/your/app-release.apk
+      env:
+        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        PACKAGE_NAME: com.seu.pwa
+        VERSION_CODE: 1
+        VERSION_NAME: 1.0.0
+        MIN_SDK_VERSION: 21
