@@ -55,6 +55,8 @@ jobs:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         PACKAGE_NAME: com.francsilva.pwa
+        DOMAIN: francsilva.com.br
+        URL_PATH: /
         VERSION_CODE: 1
         VERSION_NAME: 1.0.0
         MIN_SDK_VERSION: 21
