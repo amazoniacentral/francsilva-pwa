@@ -44,6 +44,9 @@ jobs:
       env:
         KEYSTORE: ${{ secrets.KEYSTORE }}
 
+    - name: Atualizar o Bubblewrap
+      run: npm install -g @bubblewrap/cli@latest    
+
     - name: Inicializar e construir o aplicativo
       run: |
         # Rodar bubblewrap init com o manifesto e verificar possíveis interações
