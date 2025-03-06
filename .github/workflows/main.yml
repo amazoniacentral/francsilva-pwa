@@ -52,12 +52,11 @@ jobs:
         # Configurar variáveis de ambiente
         echo "export ANDROID_HOME=$HOME/android-sdk" >> $HOME/.bashrc
         echo "export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $HOME/.bashrc
-        echo "export PATH=$HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin:$PATH" >> $HOME/.bashrc
         echo "export PATH=$HOME/android-sdk/platform-tools:$PATH" >> $HOME/.bashrc
         source $HOME/.bashrc
         # Instalar pacotes do SDK
-        yes | $HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager --licenses
-        $HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
+        yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
         # Instalar Bubblewrap
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
@@ -65,7 +64,6 @@ jobs:
           "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
           "androidSdkPath": "'$HOME'/android-sdk"      
         }' > ~/.bubblewrap/config.json
-
 
     - name: Configurar Keystore e Variáveis de Ambiente
       run: |
