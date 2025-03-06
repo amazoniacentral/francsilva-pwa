@@ -25,19 +25,20 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y openjdk-17-jdk
         sudo apt-get install -y jq # Para ler arquivos JSON
-        # Instalar Android SDK
+        # Instalar Android SDK e cmdline-tools
         sudo apt-get install -y android-sdk
+        sudo apt-get install -y android-sdk-cmdline-tools # Instalar cmdline-tools
         # Configurar Bubblewrap
         npm install -g @bubblewrap/cli
         mkdir -p ~/.bubblewrap
         echo '{
           "jdkPath": "/usr/lib/jvm/java-17-openjdk-amd64",
-          "androidSdkPath": "/usr/lib/android-sdk"
+          "androidSdkPath": "/usr/lib/android-sdk/cmdline-tools/latest"
         }' > ~/.bubblewrap/config.json
         # Ajustar permissões do sdkmanager
-        sudo chmod +x /usr/lib/android-sdk/tools/bin/sdkmanager
+        sudo chmod +x /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager
         # Aceitar licenças do Android SDK
-        yes | sudo /usr/lib/android-sdk/tools/bin/sdkmanager --licenses
+        yes | sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
 
     - name: Configurar Keystore e Variáveis de Ambiente
       run: |
