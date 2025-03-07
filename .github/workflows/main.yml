@@ -61,9 +61,9 @@ jobs:
       - name: Inicializar o projeto com Bubblewrap e capturar perguntas
         run: |          
           
-          expect <<EOF
+          expect -timeout 600 <<EOF
           # Define o tempo limite para o script
-          timeout 600
+          
           
           # Inicia o processo do Bubblewrap
           spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
