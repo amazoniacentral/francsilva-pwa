@@ -69,21 +69,14 @@ jobs:
           # Espera pela pergunta sobre o JDK
           expect "? Do you want Bubblewrap to install the JDK (recommended)?"
           send "Y\r"
-          exp_continue
           
-          expect "Decompressing the JDK 17 Sources..."
-          exp_continue
+          
+          timeout {send "\r"}
           
           # Espera pela pergunta sobre o caminho URL
           expect "? URL path:"
           send "/\r"
-          
-          # Espera por uma interação vazia (como uma verificação de download) e ignora
-          expect {
-              "Do you want Bubblewrap to install the JDK (recommended)?" {send "Y\r"}
-              "Decompressing the JDK 17 Sources..." {exp_continue}
-              timeout {send "\r"}  # Envia um ENTER caso não haja interação
-          }
+
           
           # Finaliza esperando o fim do processo
           expect eof
