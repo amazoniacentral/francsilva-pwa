@@ -25,8 +25,8 @@ jobs:
 
           # Espera pelas perguntas e responde corretamente
           expect {
-            -re "Downloading.*" {
-               puts "Baixando, Aguarde..."
+            -re ".*%.*" {
+               puts "Baixando..."
                exp_continue
             }
             -re "Decompressing.*" {
@@ -63,12 +63,12 @@ jobs:
               send "/\r"
               exp_continue
             }
-            default {
-              puts "Pergunta desconhecida capturada: $expect_out(buffer)"
-              #interact
-              sleep 5
-              exp_continue
-            }
+            #default {
+            #  puts "Pergunta desconhecida capturada: $expect_out(buffer)"
+            #  interact
+              #sleep 5
+              #exp_continue
+            #}
           }
 
           expect eof
