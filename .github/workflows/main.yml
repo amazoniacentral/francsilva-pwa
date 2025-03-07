@@ -49,37 +49,37 @@ jobs:
               exp_continue
             }
             
-            -re "Domain:.*\r" {
+            -re "Domain: " {
               puts "Pergunta original: Domain:"
               send "francsilva.com.br\r"
               exp_continue
             }
-            -re "URL path:.*\r" {
+            -re "URL path: " {
               puts "Pergunta original: URL path:"
               send "/\r"
               exp_continue
             }
-            -re "Application name:.*\r" {
+            -re "Application name: " {
               puts "Pergunta original: Application name:"
               send "Francisco Silva App\r"
               exp_continue
             }
-            -re "Short name:.*\r" {
+            -re "Short name: " {
               puts "Pergunta original: Short name:"
               send "FSilva HND\r"
               exp_continue
             }
-            -re "Application ID:.*\r" {
+            -re "Application ID: " {
               puts "Pergunta original: Application ID:"
               send "br.com.francsilva\r"
               exp_continue
             }
-            -re "Display mode:.*\r" {
+            -re "Display mode: " {
               puts "Pergunta original: Display mode:"
               send "standalone\r"
               exp_continue
             }
-            -re "Status bar color:.*\r" {
+            -re "Status bar color: " {
               puts "Pergunta original: Status bar color:"
               send "#333333\r"
               exp_continue
