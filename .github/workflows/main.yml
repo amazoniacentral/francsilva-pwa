@@ -84,12 +84,10 @@ jobs:
               send "#333333\r"
               exp_continue
             }
-            -re ".*\\? Starting version code for the new app version: "
+            -re ".*\\? Starting version code for the new app version: " {
               send "1\r"
               exp_continue
             }
-
-            
             default {
               #puts "$expect_out(buffer)"
               #interact
