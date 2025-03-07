@@ -28,7 +28,7 @@ jobs:
             -re ".*%.*" {        
                exp_continue
             }
-            -re "\\? Do you want to install the Android SDK.*(Y/n):" {
+            -re "\? Do you want to install the Android SDK.*(Y/n):" {
               send "Y\r"
               exp_continue
             }
