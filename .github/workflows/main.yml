@@ -21,7 +21,7 @@ jobs:
       - name: Inicializar o projeto com Bubblewrap e capturar perguntas
         run: |
           expect <<EOF
-          spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
+          spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
 
           # Espera pelas perguntas e responde corretamente
           expect {
