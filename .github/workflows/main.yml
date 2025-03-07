@@ -18,75 +18,49 @@ jobs:
           sudo apt-get install -y expect
           npm install -g @bubblewrap/cli
 
+      - name: Configurar Instalação automática
+        run: | 
+          mkdir -p ~/.bubblewrap
+          
+          # Decodifica a chave KEYSOTRE de Base64 e salva no caminho correto
+          echo "$KEYSTORE" | base64 --decode > ~/.bubblewrap/my-release-key.keystore
+          
+          # Gera o arquivo de configuração para o Bubblewrap
+          echo '{
+            "domain": "francsilva.com.br",
+            "path": "/",
+            "name": "Francisco Silva App",
+            "shortName": "FSilva HND",
+            "packageId": "br.com.francsilva",
+            "display": "standalone",
+            "themeColor": "#333333",
+            "navigationColor": "#333333",
+            "backgroundColor": "#FFFFFF",
+            "enableNotifications": false,
+            "signingMode": "mine",
+            "startUrl": "/",
+            "fallbackType": "customtabs",
+            "features": {
+              "playBilling": false
+            },
+            "appVersion": "1.0",
+            "appVersionCode": 1,
+            "skipSdkPrompt": false,
+            "skipSigningPrompt": false,
+            "autoInstallSdk": true,
+            "autoInstallJdk": true,
+            "autoAcceptLicenses": true,
+            "signing": {
+              "keyPath": "/home/runner/work/_temp/my-release-key.keystore",
+              "keyAlias": "'"$KEY_ALIAS"'",
+              "keyPassword": "'"$KEYSTORE_PASSWORD"'",
+              "storePassword": "'"$KEYSTORE_PASSWORD"'"
+            }
+          }' > ~/.bubblewrap/config.json
+
       - name: Inicializar o projeto com Bubblewrap e capturar perguntas
-        run: |
-          expect <<EOF
-          spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
-
-          # Espera pelas perguntas e responde corretamente
-          expect {
-            -re ".*%.*" {        
-               exp_continue
-            }
-            -re "Do you want to install the Android SDK.*(Y/n)" {
-              send "Y\r"
-              exp_continue
-            }
-            -re "Do you want Bubblewrap to install the JDK.*(Y/n)" {
-              send "Y\r"
-              exp_continue
-            }
-            -re "Do you agree to the Android SDK terms and conditions at.*(y/N)" {
-              send "Y\r"
-              exp_continue
-            }
-            -re "Do you want to install the default build tools.*(Y/n):" {
-              send "Y\r"
-              exp_continue
-            }
-            
-            -re "^\? Domain: " {
-              send "francsilva.com.br\r"
-              exp_continue
-            }
-            -re "^\? URL path: " {
-              send "/\r"
-              exp_continue
-            }
-            -re "Application name: " {
-              send "Francisco Silva App\r"
-              exp_continue
-            }
-            -re "Short name: " {
-              send "FSilva HND\r"
-              exp_continue
-            }
-            -re "Application ID: " {
-              send "br.com.francsilva\r"
-              exp_continue
-            }
-            -re "Display mode: " {
-              send "standalone\r"
-              exp_continue
-            }
-            -re "Status bar color: " {
-              send "#333333\r"
-              exp_continue
-            }
-            -re "Starting version code for the new app version: " {
-              send "1\r"
-              exp_continue
-            }
-            default {
-              #puts "$expect_out(buffer)"
-              #interact
-              #sleep 5
-              exp_continue
-            }
-          }
-
-          expect eof
-          EOF
+        run: |          
+          bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
 
       - name: Verificar e instalar JDK e SDK pelo Bubblewrap
         run: |
