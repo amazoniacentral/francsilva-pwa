@@ -73,8 +73,8 @@ jobs:
           expect {
               -re "Do you want Bubblewrap to install the JDK" { send "Y\r" }
               "? URL path:" { send "/\r" }
-              -re "Downloading" { exp_continue } 
-              -re "Extracting" { exp_continue } 
+              -re "Downloading" { sleep 30 } 
+              -re "Extracting" { sleep 10 } 
               timeout { exit 1 }
           }
           
