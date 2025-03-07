@@ -28,52 +28,52 @@ jobs:
             -re ".*%.*" {        
                exp_continue
             }
-            -re "^\? Do you want to install the Android SDK.*(Y/n):" {
+            -re "^? Do you want to install the Android SDK.*(Y/n):" {
               send "Y\r"
               exp_continue
             }
-            -re "^\? Do you want Bubblewrap to install the JDK.*(recommended)?" {
+            -re "^? Do you want Bubblewrap to install the JDK.*(recommended)?" {
               send "Y\r"
               exp_continue
             }
-            -re "^\? Do you agree to the Android SDK terms and conditions at.*?" {
+            -re "^? Do you agree to the Android SDK terms and conditions at.*?" {
               send "Y\r"
               exp_continue
             }
-            -re "^\? Do you want to install the default build tools.*(Y/n):" {
+            -re "^? Do you want to install the default build tools.*(Y/n):" {
               send "Y\r"
               exp_continue
             }
             
-            -re "^\? Domain: " {
+            -re "^? Domain: " {
               send "francsilva.com.br\r"
               exp_continue
             }
-            -re "^\? URL path: " {
+            -re "^? URL path: " {
               send "/\r"
               exp_continue
             }
-            -re "^\? Application name: " {
+            -re "^? Application name: " {
               send "Francisco Silva App\r"
               exp_continue
             }
-            -re "^\? Short name: " {
+            -re "^? Short name: " {
               send "FSilva HND\r"
               exp_continue
             }
-            -re "^\? Application ID: " {
+            -re "^? Application ID: " {
               send "br.com.francsilva\r"
               exp_continue
             }
-            -re "^\? Display mode: " {
+            -re "^? Display mode: " {
               send "standalone\r"
               exp_continue
             }
-            -re "^\? Status bar color: " {
+            -re "^? Status bar color: " {
               send "#333333\r"
               exp_continue
             }
-            -re "^\? Starting version code for the new app version: " {
+            -re "^? Starting version code for the new app version: " {
               send "1\r"
               exp_continue
             }
