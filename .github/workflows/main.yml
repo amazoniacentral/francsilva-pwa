@@ -81,7 +81,7 @@ jobs:
               }
               #-re "Downloading" { set timeout 50 } 
               #-re "Extracting" { sleep 10 } 
-              default { exp_continue }
+              # default { exp_continue }
               #timeout { exit 1 }
           }
           
