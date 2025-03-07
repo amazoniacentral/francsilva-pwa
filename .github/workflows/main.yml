@@ -68,7 +68,7 @@ jobs:
           
           
           # Inicia o processo do Bubblewrap
-          spawn bubblewrap init #--manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --appName "Francisco Silva App" --packageId "br.com.francsilva" --host "api.gvendas.app.br" --startUrl "/"
+          spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
           
           # Aguarda até o processo ser iniciado e então responde às perguntas
           expect {
