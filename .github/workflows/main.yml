@@ -79,7 +79,10 @@ jobs:
                   send "Y\r" 
                   exp_continue
               }
-              #-re "Downloading" { set timeout 50 } 
+              -re "Do you agree to the Android SDK terms and conditions at " { 
+                  send "Y\r"
+                  exp_continue
+              } 
               #-re "Extracting" { sleep 10 } 
               # default { exp_continue }
               #timeout { exit 1 }
