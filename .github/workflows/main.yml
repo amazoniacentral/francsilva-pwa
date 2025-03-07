@@ -70,11 +70,7 @@ jobs:
           expect "? Do you want Bubblewrap to install the JDK (recommended)?"
           send "Y\r"
 
-          expect {
-              "Downloading" {sleep 10}  # Aguarda o download
-              "Extracting" {sleep 20}  # Aguarda a extração
-              timeout {sleep 1}  # Aguarda qualquer outra interação
-          }
+          
           
           # Espera pela pergunta sobre o caminho URL
           expect "? URL path:"
@@ -84,6 +80,8 @@ jobs:
           # Finaliza esperando o fim do processo
           expect eof
           EOF
+
+          wait $!
           
           # Verifica se o arquivo foi criado
           cat twa-manifest.json || echo "Erro: twa-manifest.json não foi criado"
