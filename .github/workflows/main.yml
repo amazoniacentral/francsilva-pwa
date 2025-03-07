@@ -57,6 +57,7 @@ jobs:
               "storePassword": "'"$KEYSTORE_PASSWORD"'"
             }
           }' > ~/.bubblewrap/config.json
+          cat ~/.bubblewrap/config.json
 
       - name: Inicializar o projeto com Bubblewrap e capturar perguntas
         run: |          
