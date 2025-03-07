@@ -39,9 +39,9 @@ jobs:
                   puts "Instalando o JDK..."
                   exp_continue
                 }
-                -re "JDK 17 installed" {
-                  puts "JDK instalado, continuando com a próxima pergunta."
-                  exp_continue
+                -re "? Do you want Bubblewrap to install the Android SDK (recommended)?" {
+                  puts "JDK instalado"
+                  exit
                 }
                 default {
                   puts "Esperando pelo término da instalação do JDK..."
@@ -55,6 +55,7 @@ jobs:
               send "Y\r"
               exp_continue
             }
+          
             -re "Domain:" {
               puts "Pergunta original: Domain:"
               send "francsilva.com.br\r"
