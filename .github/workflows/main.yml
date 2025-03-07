@@ -25,34 +25,33 @@ jobs:
 
           # Espera pelas perguntas e responde corretamente
           expect {
-            "? Do you want to install the Android SDK (Y/n):" {
-              exp_internal 1
+            -re "Do you want to install the Android SDK Y/n:" {
               puts "Pergunta original: Do you want to install the Android SDK (Y/n):"
               send "Y\r"
+              exp_continue
             }
-            "? Do you want Bubblewrap to install the JDK (recommended)?" {
-              exp_internal 1
+            -re "Do you want Bubblewrap to install the JDK recommended?" {
               puts "Pergunta original: Do you want Bubblewrap to install the JDK (recommended)?"
               send "Y\r"
+              exp_continue
             }
-            "? Do you want to install the default build tools (Y/n):" {
-              exp_internal 1
+            -re "Do you want to install the default build tools Y/n:" {
               puts "Pergunta original: Do you want to install the default build tools (Y/n):"
               send "Y\r"
+              exp_continue
             }
-            "? Domain:" {
-              exp_internal 1
+            -re "Domain:" {
               puts "Pergunta original: Domain:"
               send "francsilva.com.br\r"
+              exp_continue
             }
-            "? URL path:" {
-              exp_internal 1
+            -re "URL path:" {
               puts "Pergunta original: URL path:"
               send "/\r"
+              exp_continue
             }
             default {
-              exp_internal 1
-              puts "Pergunta desconhecida capturada: \n"
+              puts "Pergunta desconhecida capturada: $expect_out(buffer)"
               interact
             }
           }
