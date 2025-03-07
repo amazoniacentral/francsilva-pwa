@@ -23,10 +23,7 @@ jobs:
           expect <<EOF
           spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --packageId com.francsilva.pwa --host francsilva.com.br --name "Francisco Silva App" --launcherName "FSilva HND" --no-interactive
 
-          # Aguarda um pouco para garantir que a primeira pergunta seja recebida
-          sleep 1
-
-          # Espera pela pergunta e captura a resposta
+          # Espera pelas perguntas e responde corretamente
           expect {
             "? Do you want to install the Android SDK (Y/n):" {
               exp_internal 1
