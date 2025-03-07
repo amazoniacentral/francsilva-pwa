@@ -80,11 +80,11 @@ jobs:
                   send "Y\r" 
                   exp_continue
               }
-              -re "Do you agree to the Android SDK terms and conditions at " { 
+              -re "Do you agree to the Android SDK terms and conditions at" { 
                   send "Y\r"
                   exp_continue
               } 
-              "? Domain: " { 
+              -re "Domain: " { 
                   send "francailva.com.br"\r"
                   exp_continue
               } 
