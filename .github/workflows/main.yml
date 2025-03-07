@@ -73,9 +73,9 @@ jobs:
           expect {
               "? Do you want Bubblewrap to install the JDK (recommended)?" { send "Y\r" }
               "? URL path:" { send "/\r" }
-              "Downloading" { exp_continue }  # Ignora o status de "Baixando"
-              "Extracting" { exp_continue }  # Ignora o status de "Descompactando"
-              timeout { exit 1 }  # Termina após o timeout, se necessário
+              #"Downloading" { exp_continue } 
+              #"Extracting" { exp_continue } 
+              timeout { exit 1 }
           }
           
           # Aguarda até o final do processo para o EOF
