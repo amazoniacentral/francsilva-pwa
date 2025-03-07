@@ -51,7 +51,7 @@ jobs:
             "autoInstallJdk": true,
             "autoAcceptLicenses": true,
             "signing": {
-              "keyPath": "/home/runner/work/_temp/my-release-key.keystore",
+              "keystorePath": "./my-release-key.keystore"
               "keyAlias": "'"$KEY_ALIAS"'",
               "keyPassword": "'"$KEYSTORE_PASSWORD"'",
               "storePassword": "'"$KEYSTORE_PASSWORD"'"
