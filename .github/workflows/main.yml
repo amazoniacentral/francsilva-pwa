@@ -45,11 +45,11 @@ jobs:
               exp_continue
             }
             
-            -re "^Domain:.*$" {
+            -re "^? Domain: " {
               send "francsilva.com.br\r"
               exp_continue
             }
-            -re "URL path: " {
+            -re "^? URL path: " {
               send "/\r"
               exp_continue
             }
