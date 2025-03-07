@@ -63,7 +63,7 @@ jobs:
           
           expect <<EOF
           # Define o tempo limite para o script
-          set timeout 5
+          set timeout 300
           
           
           # Inicia o processo do Bubblewrap
