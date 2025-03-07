@@ -28,15 +28,15 @@ jobs:
             -re ".*%.*" {        
                exp_continue
             }
-            -re "Do you want to install the Android SDK.*(Y/n):\r" {
+            -re "Do you want to install the Android SDK.*(Y/n)" {
               send "Y\r"
               exp_continue
             }
-            -re "Do you want Bubblewrap to install the JDK.*(recommended)?" {
+            -re "Do you want Bubblewrap to install the JDK.*(Y/n)" {
               send "Y\r"
               exp_continue
             }
-            -re "Do you agree to the Android SDK terms and conditions at.*?" {
+            -re "Do you agree to the Android SDK terms and conditions at.*(y/N)" {
               send "Y\r"
               exp_continue
             }
