@@ -39,7 +39,7 @@ jobs:
               exp_continue
             }
             -re "Do you agree to the Android SDK terms and conditions at.*?" {
-              puts "Pergunta original: ? Do you agree to the Android SDK terms and conditions at https://developer.android.com/studio/terms.html?
+              puts "Pergunta original: Do you agree to the Android SDK terms and conditions at https://developer.android.com/studio/terms.html? (Y/n):"
               send "Y\r"
               exp_continue
             }
