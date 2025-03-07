@@ -33,7 +33,22 @@ jobs:
             -re "Do you want Bubblewrap to install the JDK.*(recommended)?" {
               puts "Pergunta original: Do you want Bubblewrap to install the JDK (recommended)?"
               send "Y\r"
-              exp_continue
+              # Aguardar a conclusão da instalação do JDK
+              expect {
+                -re "Downloading JDK 17" {
+                  puts "Instalando o JDK..."
+                  exp_continue
+                }
+                -re "JDK 17 installed" {
+                  puts "JDK instalado, continuando com a próxima pergunta."
+                  exp_continue
+                }
+                default {
+                  puts "Esperando pelo término da instalação do JDK..."
+                  sleep 5
+                  exp_continue
+                }
+              }
             }
             -re "Do you want to install the default build tools.*(Y/n):" {
               puts "Pergunta original: Do you want to install the default build tools (Y/n):"
