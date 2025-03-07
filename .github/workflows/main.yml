@@ -84,7 +84,10 @@ jobs:
                   send "Y\r"
                   exp_continue
               } 
-              #-re "Extracting" { sleep 10 } 
+              -re "^? Domain:" { 
+                  send "francailva.com.br"\r"
+                  exp_continue
+              } 
               # default { exp_continue }
               #timeout { exit 1 }
           }
