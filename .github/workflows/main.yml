@@ -27,15 +27,21 @@ jobs:
           expect {
             -re ".*%.*" {
                sleep 5
+               puts ""
                exp_continue
             }
             -re "Decompressing.*" {
-               puts "Descompactando, Aguarde..."
+               puts "Descompactando..."
                sleep 5
                exp_continue
             }
             -re "Extracting.*" {
                puts "Extraindo..."
+               sleep 5
+               exp_continue
+            }
+            -re "^\s*$" {
+               puts "Aguardando..."
                sleep 5
                exp_continue
             }
@@ -79,9 +85,9 @@ jobs:
             }
             default {
               puts "$expect_out(buffer)"
-              #interact
-              sleep 5
-              exp_continue
+              interact
+              #sleep 5
+              #exp_continue
             }
           }
 
