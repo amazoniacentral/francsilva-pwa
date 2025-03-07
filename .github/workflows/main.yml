@@ -39,9 +39,9 @@ jobs:
                   puts "Instalando o JDK..."
                   exp_continue
                 }
-                -re "? Do you want Bubblewrap to install the Android SDK (recommended)?" {
+                -re "Do you want Bubblewrap to install the Android SDK.*(recommended)?" {
                   puts "JDK instalado"
-                  exit
+                  exit 0
                 }
                 default {
                   puts "Esperando pelo término da instalação do JDK..."
