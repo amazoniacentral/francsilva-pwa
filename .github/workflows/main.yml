@@ -84,7 +84,7 @@ jobs:
                   send "Y\r"
                   exp_continue
               } 
-              -re "^? Domain:" { 
+              "? Domain: " { 
                   send "francailva.com.br"\r"
                   exp_continue
               } 
