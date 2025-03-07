@@ -62,14 +62,13 @@ jobs:
         run: |          
           
           expect <<EOF
-          timeout 300
           
           expect {
               "? Do you want Bubblewrap to install the JDK (recommended)?" { send "Y\r" }
               "? URL path:" { send "/\r" }
               "Downloading" { continue }  # Ignora o status de "Baixando"
               "Extracting" { continue }  # Ignora o status de "Descompactando"
-              timeout { exit 1 }  # Termina após timeout
+              
           }
 
 
