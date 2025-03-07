@@ -48,38 +48,33 @@ jobs:
             
             -re "Do you want to install the Android SDK.*(Y/n):" {
               puts "Pergunta original: Do you want to install the Android SDK (Y/n):"
-              sleep 1
               send "Y\r"
               exp_continue
             }
             -re "Do you want to install the default build tools.*(Y/n):" {
               puts "Pergunta original: Do you want to install the default build tools (Y/n):"
-              sleep 1
               send "Y\r"
+              sleep 1
               exp_continue
             }
             -re "Do you agree to the Android SDK terms and conditions at.*?" {
               puts "Pergunta original: ? Do you agree to the Android SDK terms and conditions at https://developer.android.com/studio/terms.html?
-              sleep 1
               send "Y\r"
               exp_continue
             }
             -re "Do you want to install the default build tools.*(Y/n):" {
               puts "Pergunta original: Do you want to install the default build tools (Y/n):"
-              sleep 1
               send "Y\r"
               exp_continue
             }
             
             -re "Domain:" {
               puts "Pergunta original: Domain:"
-              sleep 1
               send "francsilva.com.br\r"
               exp_continue
             }
             -re "URL path:" {
               puts "Pergunta original: URL path:"
-              sleep 1
               send "/\r"
               exp_continue
             }
