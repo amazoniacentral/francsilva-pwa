@@ -35,12 +35,13 @@ jobs:
               send "Y\r"
               # Aguardar a conclusão da instalação do JDK
               expect {
-                -re "Downloading JDK 17" {
+                -re "Downloading.*" {
                   puts "Instalando o JDK..."
                   exp_continue
                 }
-                -re "Do you want Bubblewrap to install the Android SDK.*(recommended)?" {
+                -re "Extracting.*" {
                   puts "JDK instalado"
+                  sleep 5
                   exit 0
                 }
                 default {
