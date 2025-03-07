@@ -26,39 +26,47 @@ jobs:
           # Espera pelas perguntas e responde corretamente
           expect {
             -re ".*%.*" {
+               sleep 5
                exp_continue
             }
             -re "Decompressing.*" {
                puts "Descompactando, Aguarde..."
+               sleep 5
                exp_continue
             }
             -re "Extracting.*" {
                puts "Extraindo..."
+               sleep 5
                exp_continue
             }
             
             -re "Do you want to install the Android SDK.*(Y/n):" {
               puts "Pergunta original: Do you want to install the Android SDK (Y/n):"
+              sleep 1
               send "Y\r"
               exp_continue
             }
             -re "Do you want Bubblewrap to install the JDK.*(recommended)?" {
               puts "Pergunta original: Do you want Bubblewrap to install the JDK (recommended)?"
+              sleep 1
               send "Y\r"
               exp_continue
             }
             -re "Do you want to install the default build tools.*(Y/n):" {
               puts "Pergunta original: Do you want to install the default build tools (Y/n):"
+              sleep 1
               send "Y\r"
               exp_continue
             }
             -re "Domain:" {
               puts "Pergunta original: Domain:"
+              sleep 1
               send "francsilva.com.br\r"
               exp_continue
             }
             -re "URL path:" {
               puts "Pergunta original: URL path:"
+              sleep 1
               send "/\r"
               exp_continue
             }
