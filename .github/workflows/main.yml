@@ -28,63 +28,52 @@ jobs:
             -re ".*%.*" {        
                exp_continue
             }
-            -re ".*\\? Do you want to install the Android SDK.*(Y/n):" {
-              puts "Pergunta original: Do you want to install the Android SDK (Y/n):"
+            -re "^\\? Do you want to install the Android SDK.*(Y/n):" {
               send "Y\r"
               exp_continue
             }
-            -re ".*\\? Do you want Bubblewrap to install the JDK.*(recommended)?" {
-              puts "Pergunta original: ? Do you want Bubblewrap to install the JDK (recommended)? (Y/n):"
+            -re "^\\? Do you want Bubblewrap to install the JDK.*(recommended)?" {
               send "Y\r"
               exp_continue
             }
-            -re ".*\\? Do you agree to the Android SDK terms and conditions at.*?" {
-              puts "Pergunta original: Do you agree to the Android SDK terms and conditions at https://developer.android.com/studio/terms.html? (Y/n):"
+            -re "^\\? Do you agree to the Android SDK terms and conditions at.*?" {
               send "Y\r"
               exp_continue
             }
-            -re ".*\\? Do you want to install the default build tools.*(Y/n):" {
-              puts "Pergunta original: Do you want to install the default build tools (Y/n):"
+            -re "^\\? Do you want to install the default build tools.*(Y/n):" {
               send "Y\r"
               exp_continue
             }
             
-            -re ".*\\? Domain: " {
-              puts "Pergunta original: Domain:"
+            -re "^\\? Domain: " {
               send "francsilva.com.br\r"
               exp_continue
             }
-            -re ".*\\? URL path: " {
-              puts "Pergunta original: URL path:"
+            -re "^\\? URL path: " {
               send "/\r"
               exp_continue
             }
-            -re ".*\\? Application name: " {
-              puts "Pergunta original: Application name:"
+            -re "^\\? Application name: " {
               send "Francisco Silva App\r"
               exp_continue
             }
-            -re ".*\\? Short name: " {
-              puts "Pergunta original: Short name:"
+            -re "^\\? Short name: " {
               send "FSilva HND\r"
               exp_continue
             }
-            -re ".*\\? Application ID: " {
-              puts "Pergunta original: Application ID:"
+            -re "^\\? Application ID: " {
               send "br.com.francsilva\r"
               exp_continue
             }
-            -re ".*\\? Display mode: " {
-              puts "Pergunta original: Display mode:"
+            -re "^\\? Display mode: " {
               send "standalone\r"
               exp_continue
             }
-            -re ".*\\? Status bar color: " {
-              puts "Pergunta original: Status bar color:"
+            -re "^\\? Status bar color: " {
               send "#333333\r"
               exp_continue
             }
-            -re ".*\\? Starting version code for the new app version: " {
+            -re "^\\? Starting version code for the new app version: " {
               send "1\r"
               exp_continue
             }
