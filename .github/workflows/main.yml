@@ -63,10 +63,12 @@ jobs:
               send "/\r"
               exp_continue
             }
-            #default {
-            #  puts "Pergunta desconhecida capturada: $expect_out(buffer)"
-            #  interact
-            #}
+            default {
+              puts "Pergunta desconhecida capturada: $expect_out(buffer)"
+              #interact
+              sleep 5
+              exp_continue
+            }
           }
 
           expect eof
