@@ -37,11 +37,7 @@ jobs:
                puts "Extraindo..."
                exp_continue
             }
-            -re "(buffer).*" {
-               puts "Buffer"
-               sleep 5
-               exp_continue
-            }
+            
             -re "Do you want to install the Android SDK.*(Y/n):" {
               puts "Pergunta original: Do you want to install the Android SDK (Y/n):"
               send "Y\r"
@@ -67,10 +63,10 @@ jobs:
               send "/\r"
               exp_continue
             }
-            default {
-              puts "Pergunta desconhecida capturada: $expect_out(buffer)"
-              interact
-            }
+            #default {
+            #  puts "Pergunta desconhecida capturada: $expect_out(buffer)"
+            #  interact
+            #}
           }
 
           expect eof
