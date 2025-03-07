@@ -62,25 +62,17 @@ jobs:
         run: |          
           
           expect <<EOF
-          timeout 600
-          # Inicia o processo do Bubblewrap
-          spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
+          timeout 300
           
-          # Espera pela pergunta sobre o JDK
-          expect "? Do you want Bubblewrap to install the JDK (recommended)?"
-          send "Y\r"
+          expect {
+              "? Do you want Bubblewrap to install the JDK (recommended)?" { send "Y\r" }
+              "? URL path:" { send "/\r" }
+              "Downloading" { continue }  # Ignora o status de "Baixando"
+              "Extracting" { continue }  # Ignora o status de "Descompactando"
+              timeout { exit 1 }  # Termina após timeout
+          }
 
-          # Espera pela pergunta sobre o SDK
-          expect "? Do you want Bubblewrap to install the JDK (recommended)?"
-          send "Y\r"
 
-          
-          
-          # Espera pela pergunta sobre o caminho URL
-          expect "? URL path:"
-          send "/\r"
-
-          
           # Finaliza esperando o fim do processo
           expect eof
           EOF
