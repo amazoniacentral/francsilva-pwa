@@ -71,7 +71,7 @@ jobs:
           
           # Aguarda até o processo ser iniciado e então responde às perguntas
           expect {
-              "? Do you want Bubblewrap to install the JDK (recommended)?" { send "Y\r" }
+              "? Do you want Bubblewrap to install the JDK (recommended)?\r" { send "Y\r" }
               "? URL path:" { send "/\r" }
               #"Downloading" { exp_continue } 
               #"Extracting" { exp_continue } 
