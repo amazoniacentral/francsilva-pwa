@@ -69,6 +69,10 @@ jobs:
           # Espera pela pergunta sobre o JDK
           expect "? Do you want Bubblewrap to install the JDK (recommended)?"
           send "Y\r"
+          exp_continue
+          
+          expect "Decompressing the JDK 17 Sources..."
+          exp_continue
           
           # Espera pela pergunta sobre o caminho URL
           expect "? URL path:"
