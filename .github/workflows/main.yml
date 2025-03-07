@@ -71,8 +71,14 @@ jobs:
           
           # Aguarda até o processo ser iniciado e então responde às perguntas
           expect {
-              -re "Do you want Bubblewrap to install the JDK" { send "Y\r" }
-              -re "Do you want Bubblewrap to install the Android SDK" { send "Y\r" }
+              -re "Do you want Bubblewrap to install the JDK" { 
+                  send "Y\r" 
+                  exp_continue
+              }
+              -re "Do you want Bubblewrap to install the Android SDK" { 
+                  send "Y\r" 
+                  exp_continue
+              }
               #-re "Downloading" { set timeout 50 } 
               #-re "Extracting" { sleep 10 } 
               default { exp_continue }
