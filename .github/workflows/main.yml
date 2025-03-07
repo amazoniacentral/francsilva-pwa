@@ -25,6 +25,18 @@ jobs:
 
           # Espera pelas perguntas e responde corretamente
           expect {
+            -re "Downloading.*" {
+               puts "Baixando, Aguarde..."
+               exp_continue
+            }
+            -re "Decompressing.*" {
+               puts "Descompactando, Aguarde..."
+               exp_continue
+            }
+            -re "Extracting.*" {
+               puts "Extraindo..."
+               exp_continue
+            }
             -re "Do you want to install the Android SDK.*(Y/n):" {
               puts "Pergunta original: Do you want to install the Android SDK (Y/n):"
               send "Y\r"
@@ -33,22 +45,7 @@ jobs:
             -re "Do you want Bubblewrap to install the JDK.*(recommended)?" {
               puts "Pergunta original: Do you want Bubblewrap to install the JDK (recommended)?"
               send "Y\r"
-              # Aguardar a conclusão da instalação do JDK
-              expect {
-                -re "Downloading.*" {
-                  puts "Instalando o JDK..."
-                  exp_continue
-                }
-                -re "Extracting.*" {
-                  puts "JDK instalado"
-                  sleep 5
-                  exit 0
-                }
-                default {
-                  puts "Esperando pelo término da instalação do JDK..."
-                  sleep 5
-                  exp_continue
-                }
+              exp_continue
               }
             }
             -re "Do you want to install the default build tools.*(Y/n):" {
