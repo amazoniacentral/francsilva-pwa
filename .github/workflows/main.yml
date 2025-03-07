@@ -77,7 +77,7 @@ jobs:
           # Espera por uma interação vazia (como uma verificação de download) e ignora
           expect {
               "Do you want Bubblewrap to install the JDK (recommended)?" {send "Y\r"}
-              "URL path:" {send "/\r"}
+              "Decompressing the JDK 17 Sources..." {exp_continue}
               timeout {send "\r"}  # Envia um ENTER caso não haja interação
           }
           
