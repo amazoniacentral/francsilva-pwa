@@ -62,7 +62,7 @@ jobs:
         run: |          
           sudo apt-get install -y expect
           
-          expect <<EOF
+          expect -timeout 600 <<EOF
           # Inicia o processo do Bubblewrap
           spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
           
@@ -81,7 +81,7 @@ jobs:
           expect eof
           EOF
 
-          wait $!
+          
           
           # Verifica se o arquivo foi criado
           cat twa-manifest.json || echo "Erro: twa-manifest.json não foi criado"
