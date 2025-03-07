@@ -60,8 +60,18 @@ jobs:
 
       - name: Inicializar o projeto com Bubblewrap e capturar perguntas
         run: |          
-          bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json
+          sudo apt-get install -y expect
+          expect <<EOF
+          spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
+          expect "? Do you want Bubblewrap to install the JDK (recommended)?"
+          send "Y\r"
+          expect "? URL path:"
+          send "/\r"
+          expect eof
+          EOF
+          cat twa-manifest.json || echo "Erro: twa-manifest.json não foi criado"
 
+          
       - name: Verificar e instalar JDK e SDK pelo Bubblewrap
         run: |
           bubblewrap doctor
