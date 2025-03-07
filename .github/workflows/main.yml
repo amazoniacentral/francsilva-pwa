@@ -60,9 +60,9 @@ jobs:
 
       - name: Inicializar o projeto com Bubblewrap e capturar perguntas
         run: |          
-          sudo apt-get install -y expect
           
-          expect -timeout 600 <<EOF
+          expect <<EOF
+          timeout 600
           # Inicia o processo do Bubblewrap
           spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
           
