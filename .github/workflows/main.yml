@@ -69,7 +69,12 @@ jobs:
           # Espera pela pergunta sobre o JDK
           expect "? Do you want Bubblewrap to install the JDK (recommended)?"
           send "Y\r"
-          sleep 40
+
+          expect {
+              "Downloading" {sleep 10}  # Aguarda o download
+              "Extracting" {sleep 20}  # Aguarda a extração
+              timeout {sleep 1}  # Aguarda qualquer outra interação
+          }
           
           # Espera pela pergunta sobre o caminho URL
           expect "? URL path:"
