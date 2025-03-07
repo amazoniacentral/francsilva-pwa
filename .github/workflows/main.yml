@@ -60,9 +60,9 @@ jobs:
               exp_continue
             }
             default {
-              puts "$expect_out(buffer)"
+              #puts "$expect_out(buffer)"
               #interact
-              sleep 5
+              #sleep 5
               exp_continue
             }
           }
