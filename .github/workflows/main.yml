@@ -62,21 +62,24 @@ jobs:
         run: |          
           
           expect <<EOF
+          # Define o tempo limite para o script
+          timeout 600
           
+          # Inicia o processo do Bubblewrap
+          spawn bubblewrap init --manifest https://api.gvendas.app.br/gvendas/site/3/manifest/?format=json --no-interactive
+          
+          # Aguarda até o processo ser iniciado e então responde às perguntas
           expect {
               "? Do you want Bubblewrap to install the JDK (recommended)?" { send "Y\r" }
               "? URL path:" { send "/\r" }
               "Downloading" { continue }  # Ignora o status de "Baixando"
               "Extracting" { continue }  # Ignora o status de "Descompactando"
-              
+              timeout { exit 1 }  # Termina após o timeout, se necessário
           }
-
-
-          # Finaliza esperando o fim do processo
+          
+          # Aguarda até o final do processo para o EOF
           expect eof
           EOF
-
-          
           
           # Verifica se o arquivo foi criado
           cat twa-manifest.json || echo "Erro: twa-manifest.json não foi criado"
