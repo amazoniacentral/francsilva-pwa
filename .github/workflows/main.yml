@@ -117,8 +117,7 @@ jobs:
           KEYSTORE: ${{ secrets.KEYSTORE }}
 
       - name: Construir o APK com Bubblewrap
-        run: |
-          yes | sdkmanager --licenses
+        run: |          
           bubblewrap build
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
