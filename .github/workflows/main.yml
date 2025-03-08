@@ -85,7 +85,7 @@ jobs:
                   exp_continue
               } 
               -re "Domain: " { 
-                  send "francailva.com.br"\r"
+                  send "francailva.com.br\r"
                   exp_continue
               } 
               # default { exp_continue }
