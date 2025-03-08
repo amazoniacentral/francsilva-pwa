@@ -85,11 +85,11 @@ jobs:
                   exp_continue
               } 
               -re "Domain: " { 
-                  send "Y\r"
+                  send "\r"
                   exp_continue
               }
               -re "URL path: " {
-                  send "Y\r"
+                  send "\r"
                   exp_continue
               }
               # default { exp_continue }
