@@ -56,8 +56,8 @@ jobs:
               "keyPassword": "'"$KEYSTORE_PASSWORD"'",
               "storePassword": "'"$KEYSTORE_PASSWORD"'"
             }
-          }' > twa-manifest.json
-          cat twa-manifest.json
+          }' > twa-manifestq.json
+          cat twa-manifestq.json
 
       - name: Inicializar o projeto com Bubblewrap e capturar perguntas
         run: |          
@@ -84,11 +84,11 @@ jobs:
                   send "Y\r"
                   exp_continue
               } 
-              -re "Domain: " { 
+              -re "Domain:" { 
                   send "\r"
                   exp_continue
               }
-              -re "URL path: " {
+              -re "URL path:" {
                   send "\r"
                   exp_continue
               }
@@ -118,6 +118,7 @@ jobs:
 
       - name: Construir o APK com Bubblewrap
         run: |
+          yes | sdkmanager --licenses
           bubblewrap build
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
