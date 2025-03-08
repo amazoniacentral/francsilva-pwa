@@ -85,7 +85,7 @@ jobs:
                   exp_continue
               } 
               -re "Domain: " { 
-                  send "Y\r"#"francailva.com.br\r"
+                  send "Y\r"
                   exp_continue
               }
               -re "URL path: " {
