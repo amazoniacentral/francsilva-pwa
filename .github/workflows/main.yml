@@ -85,9 +85,13 @@ jobs:
                   exp_continue
               } 
               -re "Domain: " { 
-                  send "francailva.com.br\r"
+                  send "Y\r"#"francailva.com.br\r"
                   exp_continue
-              } 
+              }
+              -re "URL path: " {
+                  send "Y\r"
+                  exp_continue
+              }
               # default { exp_continue }
               #timeout { exit 1 }
           }
